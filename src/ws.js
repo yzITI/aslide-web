@@ -23,9 +23,9 @@ const ws = {
       ws.handle(data)
     }
   },
-  send (data) {
+  call (N, ...A) {
     if (!ws.socket) return
-    ws.socket.send(JSON.stringify(data))
+    ws.socket.send(JSON.stringify({ N, A }))
   },
   handle: msg => {
     console.log('[WS] msg:', msg)
