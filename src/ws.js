@@ -24,7 +24,7 @@ const ws = {
     }
   },
   call (N, ...A) {
-    if (!ws.socket) return
+    if (ws.socket?.readyState !== 1) return
     last = Date.now()
     ws.socket.send(JSON.stringify({ N, A }))
   },

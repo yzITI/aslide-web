@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 export const state = reactive({
-  channel: null
+  loading: false
 })
 
 export default state

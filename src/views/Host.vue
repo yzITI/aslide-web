@@ -23,15 +23,18 @@ ws.handle = msg => {
   channel.time = Date.now()
   if (msg.sessions) {
     for (const s in msg.sessions) {
-      if (s) channel.sessions[s] = msg.sessions[s]
+      if (msg.sessions[s]) channel.sessions[s] = msg.sessions[s]
       else delete channel.sessions[s]
     }
   }
   if (msg.responses) {
     for (const r in msg.responses) channel.responses[r] = msg.responses[r]
   }
-  if (msg.slide) channel.slide = msg.slide
+  if (typeof msg.slide !== 'undefined') channel.slide = msg.slide
+  console.log(channel.sessions)
 }
+
+let viewUrl = $computed(() => window.location.href.replace(/\/host\/(.*)/, '/@/' + channel.id))
 
 function join () {
   ws.call('host.join', channel.input)
@@ -68,11 +71,12 @@ function leave () {
           <button v-if="channel.time" class="rounded bg-red-700 all-transition shadow hover:shadow-md px-3 font-bold" @click="leave">Leave</button>
           <button v-if="!channel.time && channel.input" class="rounded bg-yellow-600 all-transition shadow hover:shadow-md px-3 font-bold" @click="join">Join</button>
         </div>
+        <p v-if="channel.time" class="font-mono select-all my-1" style="font-size: 0.6rem;">{{ viewUrl }}</p>
       </div>
       <div class="w-full grow overflow-auto p-2"><!-- session list -->
         <h3 class="font-bold text-lg">Sessions</h3>
         <hr>
-        <div v-for="(s, id) in channel.sessions">{{ s.name || 'Anonymous' + (id === ws.session ? '(me)' : '') }}</div>
+        <div v-for="(s, id) in channel.sessions">{{ s?.name || 'Anonymous' + (id === ws.session ? '(me)' : '') }}</div>
       </div>
     </div>
   </div>
