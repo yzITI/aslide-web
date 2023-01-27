@@ -1,7 +1,7 @@
 <script setup>
 import ws from '../ws.js'
 import EditableList from '../components/EditableList.vue'
-import { PlayIcon, PlusIcon, PencilIcon } from '@heroicons/vue/24/solid'
+import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/solid'
 
 const parseTime = t => moment(t).format('YYYY-MM-DD HH:mm:ss')
 
@@ -9,13 +9,15 @@ let slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
 
 function play (i) {
   if (!channel.time) return
-  if (playing === i) { // close playing
-    ws.call('host.slide', null)
-    playing = -1
-  } else { // start playing
-    ws.call('host.slide', { index: i, surl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' })
-    playing = i
-  }
+  const s = slides[i]
+  if (!s) return
+  ws.call('host.slide', { index: i, surl: s.surl })
+  playing = i
+}
+
+function stop () {
+  ws.call('host.slide', null)
+  playing = -1
 }
 
 let channel = $ref({ input: '' })
@@ -45,7 +47,10 @@ ws.handle = msg => {
   if (msg.responses) {
     for (const r in msg.responses) channel.responses[r] = msg.responses[r]
   }
-  if (typeof msg.slide !== 'undefined') channel.slide = msg.slide
+  if (typeof msg.slide !== 'undefined') {
+    channel.slide = msg.slide
+    if (channel.slide) channel.sessions[ws.session].index = channel.slide.index
+  }
 }
 
 let viewUrl = $computed(() => window.location.href.replace(/\/host\/(.*)/, '/@/' + channel.id))
@@ -61,20 +66,26 @@ function leave () {
 </script>
 
 <template>
-  <div class="w-screen h-screen overflow-hidden flex bg-gray-100 min-w-[1024px]">
-    <div class="flex flex-col grow"><!-- slide control -->
+  <div class="w-screen h-screen flex bg-gray-100 min-w-[1024px]">
+    <div class="flex flex-col grow h-full"><!-- slide control -->
       <div class="flex p-2"><!-- title -->
         <input class="font-bold text-xl block w-2/3 px-2 rounded" placeholder="Title">
       </div>
-      <div class="flex grow p-2"><!-- slides -->
-        <div class="flex flex-col w-48"><!-- slide list -->
-          <h3 class="font-bold text-lg">Slides</h3>
+      <div class="flex grow p-2 h-0"><!-- slides -->
+        <div class="flex flex-col w-48 overflow-auto"><!-- slide list -->
+          <h3 class="font-bold text-lg flex items-center justify-between">
+            Slides
+            <div class="flex items-center justify-center text-blue-300" v-if="channel.time">
+              <ChevronLeftIcon @click="play(playing - 1)" class="w-5 mx-1 all-transition hover:text-blue-500 cursor-pointer" :class="playing < 1 && 'invisible'" />
+              <StopIcon @click="stop" class="w-7 mx-1 all-transition hover:text-blue-500 cursor-pointer" :class="playing < 0 && 'invisible'" />
+              <ChevronRightIcon @click="play(playing + 1)" class="w-5 mx-1 all-transition hover:text-blue-500 cursor-pointer" :class="playing >= slides.length - 1 && 'invisible'" />
+            </div>
+          </h3>
           <EditableList :list="slides" item-class="border rounded px-2 py-1 bg-white my-1">
             <template #item="{ elment: el, index: i }">
-              <div class="flex items-center font-bold cursor-pointer" @click="editing = i">
-                <PlayIcon class="w-5 mr-2 all-transition" :class="channel.slide?.index === i ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(i)" />
+              <div class="flex items-center cursor-pointer text-gray-700" :class="editing === i && 'font-bold text-black'" @click="editing = i">
+                <PlayIcon class="w-5 mr-2 all-transition" :class="playing === i ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(i)" />
                 Slide {{ i }}
-                <PencilIcon v-if="editing === i" class="w-3 text-blue-500 ml-1" />
               </div>
             </template>
           </EditableList>
@@ -82,7 +93,21 @@ function leave () {
             <PlusIcon class="w-5 m-auto" />
           </div>
         </div>
-        <div class="flex flex-col grow"><!-- slide editor -->
+        <div class="flex flex-col grow p-2"><!-- slide editor -->
+          <div class="bg-white rounded p-2" v-if="slides[editing]">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-lg">Slide {{ editing }}</h3>
+              <PlayIcon class="w-5 mr-2 all-transition cursor-pointer" :class="playing === editing ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(editing)" />
+            </div>
+            <label class="text-sm my-1 flex items-center">
+              Slide URL: 
+              <input class="rounded px-2 font-mono border mx-2 block grow" v-model="slides[editing].surl" placeholder="Slide URL">
+            </label>
+            <label class="text-sm my-1 flex items-center">
+              Editor URL: 
+              <input class="rounded px-2 font-mono border mx-2 block grow" v-model="slides[editing].eurl" placeholder="Editor URL">
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -105,7 +130,7 @@ function leave () {
         <hr>
         <div v-for="(s, id) in channel.sessions" class="flex justify-between items-center">
           {{ s?.name || 'Anonymous' + (id === ws.session ? '(me)' : '') }}
-          <div class="all-transition rounded-full px-2 text-xs" :class="playing === s.index ? 'bg-green-600' : 'bg-gray-500'">{{ typeof s.index === 'undefined' ? 'N/A' : s.index }}</div>
+          <div class="all-transition rounded-full px-2 text-xs" v-if="playing >= 0" :class="playing === s.index ? 'bg-green-600' : 'bg-gray-500'">{{ typeof s.index === 'undefined' ? 'N/A' : s.index }}</div>
         </div>
       </div>
     </div>

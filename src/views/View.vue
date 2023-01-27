@@ -5,12 +5,13 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const id = route.params.id
 
-let iframe = $ref(), info = $ref({})
+let iframe = $ref(), info = $ref({}), show = $ref(true)
 
 let channel = $ref({ slide: null })
 function initChannel () {
   channel.time = false // last message time, used to mark channel open
   channel.slide = null
+  info = {}
 }
 initChannel()
 
@@ -48,7 +49,5 @@ ws.handle = msg => {
 </script>
 
 <template>
-  <Transition name="fade">
-    <iframe v-if="channel.slide" class="w-screen h-screen" ref="iframe" :src="channel.slide.surl" />
-  </Transition>
+  <iframe v-if="channel.slide" class="w-screen h-screen all-transition" :class="show ? 'opacity-100' : 'opacity-0'" ref="iframe" :src="channel.slide.surl" />
 </template>
