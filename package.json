@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.13",
+    "sortablejs": "^1.15.0",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },

@@ -5,6 +5,8 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const id = route.params.id
 
+let iframe = $ref(), info = $ref({})
+
 let channel = $ref({ slide: null })
 function initChannel () {
   channel.time = false // last message time, used to mark channel open
@@ -22,6 +24,7 @@ async function join () {
   }
   ws.call('view.join', id)
 }
+if (ws.session) join()
 
 ws.handle = msg => {
   console.log(msg)
@@ -32,12 +35,20 @@ ws.handle = msg => {
   }
   if (msg.alert) Swal.fire(msg.alert.title, msg.alert.html, msg.alert.icon)
   channel.time = Date.now()
-  if (typeof msg.slide !== 'undefined') channel.slide = msg.slide
+  if (typeof msg.slide !== 'undefined') {
+    channel.slide = msg.slide
+    if (msg.slide && info.index !== msg.slide.index) {
+      info.index = msg.slide.index
+      ws.call('view.info', info)
+    }
+  }
   if (channel.slide) state.loading = false
   else state.loading = 'Waiting for Host'
 }
 </script>
 
 <template>
-  <h1>This is the view page, presenting the slide to viewer</h1>
+  <Transition name="fade">
+    <iframe v-if="channel.slide" class="w-screen h-screen" ref="iframe" :src="channel.slide.surl" />
+  </Transition>
 </template>
