@@ -3,6 +3,12 @@ import OverlayLoading from './components/OverlayLoading.vue'
 </script>
 
 <template>
-  <router-view></router-view>
+  <RouterView v-slot="{ Component }">
+    <Transition name="fade" mode="out-in">
+      <KeepAlive>
+        <Component :is="Component" />
+      </KeepAlive>
+    </Transition>
+  </RouterView>
   <OverlayLoading></OverlayLoading>
 </template>
