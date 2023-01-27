@@ -1,4 +1,4 @@
-let retry = false
+let retry = false, last = Date.now()
 
 const ws = {
   socket: null,
@@ -25,6 +25,7 @@ const ws = {
   },
   call (N, ...A) {
     if (!ws.socket) return
+    last = Date.now()
     ws.socket.send(JSON.stringify({ N, A }))
   },
   handle: msg => {
@@ -32,8 +33,15 @@ const ws = {
   }
 }
 
-ws.connect()
+function heartbeat () {
+  if (Date.now() - last > 29e3) {
+    if (ws.socket) ws.socket.send('heartbeat')
+    last = Date.now()
+  }
+  setTimeout(heartbeat, 30e3 - Date.now() + last)
+}
 
-setInterval(() => { ws.socket.send('heartbeat') }, 30e3)
+ws.connect()
+heartbeat()
 
 export default ws

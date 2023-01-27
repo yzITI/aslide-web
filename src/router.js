@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import ws from './ws.js'
 
 const index = {
   '/@/:id': () => import('./views/View.vue'),
@@ -15,6 +16,7 @@ router.beforeEach(() => { NProgress.start() })
 router.afterEach(() => {
   Swal.close()
   NProgress.done()
+  ws.call('view.leave')
 })
 
 export default router
