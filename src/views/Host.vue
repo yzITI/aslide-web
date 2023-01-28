@@ -14,6 +14,7 @@ function play (i) {
   if (!s) return
   ws.call('host.slide', { index: i, surl: s.surl, data: s.data })
   playing = i
+  editing = i
 }
 
 function stop () {
