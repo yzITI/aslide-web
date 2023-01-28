@@ -1,5 +1,6 @@
 <script setup>
 import ws from '../ws.js'
+import { setListener, sendIn } from '../utils/iframe.js'
 import EditableList from '../components/EditableList.vue'
 import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/solid'
 
@@ -11,7 +12,7 @@ function play (i) {
   if (!channel.time) return
   const s = slides[i]
   if (!s) return
-  ws.call('host.slide', { index: i, surl: s.surl })
+  ws.call('host.slide', { index: i, surl: s.surl, data: s.data })
   playing = i
 }
 
@@ -19,6 +20,15 @@ function stop () {
   ws.call('host.slide', null)
   playing = -1
 }
+
+let iframe = $ref()
+setListener(msg => { // msg from iframe editor
+  if (msg.ready) sendIn({ slide: slides[editing] }, iframe)
+  if (msg.slide) { // update slide
+    for (const k in msg.slide) slides[editing][k] = msg.slide[k]
+    if (editing === playing) play(playing) // current slide
+  }
+})
 
 let channel = $ref({ input: '' })
 
@@ -32,7 +42,6 @@ function initChannel () {
 initChannel()
 
 ws.handle = msg => {
-  console.log(msg)
   if (msg.session) return initChannel()
   if (msg.host === ws.session) channel.id = msg.channel
   if (msg.alert) Swal.fire(msg.alert.title, msg.alert.html, msg.alert.icon)
@@ -53,7 +62,7 @@ ws.handle = msg => {
   }
 }
 
-let viewUrl = $computed(() => window.location.href.replace(/\/host\/(.*)/, '/@/' + channel.id))
+let viewUrl = $computed(() => window.location.href.replace(/\/host\/(.*)/, '/view/' + channel.id))
 
 function join () {
   ws.call('host.join', channel.input)
@@ -93,8 +102,8 @@ function leave () {
             <PlusIcon class="w-5 m-auto" />
           </div>
         </div>
-        <div class="flex flex-col grow p-2"><!-- slide editor -->
-          <div class="bg-white rounded p-2" v-if="slides[editing]">
+        <div class="flex flex-col grow p-2" v-if="slides[editing]"><!-- slide editor -->
+          <div class="bg-white rounded p-2">
             <div class="flex items-center justify-between">
               <h3 class="font-bold text-lg">Slide {{ editing }}</h3>
               <PlayIcon class="w-5 mr-2 all-transition cursor-pointer" :class="playing === editing ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(editing)" />
@@ -108,6 +117,7 @@ function leave () {
               <input class="rounded px-2 font-mono border mx-2 block grow" v-model="slides[editing].eurl" placeholder="Editor URL">
             </label>
           </div>
+          <iframe v-if="slides[editing].eurl" class="grow" ref="iframe" :src="slides[editing].eurl" :key="editing + slides[editing].eurl" />
         </div>
       </div>
     </div>

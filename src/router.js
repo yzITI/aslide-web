@@ -1,11 +1,13 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import ws from './ws.js'
 
 const index = {
-  '/@/:id': () => import('./views/View.vue'),
-  '/home': () => import('./views/Home.vue'),
+  '/view/:id': () => import('./views/View.vue'),
   '/host/:id': () => import('./views/Host.vue'),
-  '/': () => import('./views/Entry.vue')
+  '/home': () => import('./views/Home.vue'),
+  '/': () => import('./views/Entry.vue'),
+
+  '/@/html': () => import('./slides/HTML.vue'),
+  '/@/html-editor': () => import('./slides/HTMLEditor.vue')
 }
 
 const routes = []
@@ -13,10 +15,15 @@ for (const r in index) routes.push({ path: r, component: index[r] })
 const router = createRouter({ history: createWebHashHistory(), routes }) 
 
 router.beforeEach(() => { NProgress.start() })
-router.afterEach((to, from) => {
+
+let wsM = null
+router.afterEach(async (to, from) => {
   Swal.close()
   NProgress.done()
-  if (from.path.indexOf('/host') === 0 || from.path.indexOf('/@')) ws.call('view.leave')
+  if (from.path.indexOf('/host/') === 0 || from.path.indexOf('/view/') === 0) {
+    if (!wsM) wsM = await import('./ws.js')
+    wsM.default.call('view.leave')
+  }
 })
 
 export default router

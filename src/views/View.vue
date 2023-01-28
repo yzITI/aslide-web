@@ -1,6 +1,7 @@
 <script setup>
 import ws from '../ws.js'
 import state from '../state.js'
+import { sendIn, setListener } from '../utils/iframe.js'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 const id = route.params.id
@@ -28,7 +29,6 @@ async function join () {
 if (ws.session) join()
 
 ws.handle = msg => {
-  console.log(msg)
   if (msg.session) {
     initChannel()
     join()
@@ -41,13 +41,22 @@ ws.handle = msg => {
     if (msg.slide && info.index !== msg.slide.index) {
       info.index = msg.slide.index
       ws.call('view.info', info)
+      show = false
+      setTimeout(() => { show = true }, 500)
     }
+    sendIn({ slide: channel.slide }, iframe)
   }
   if (channel.slide) state.loading = false
   else state.loading = 'Waiting for Host'
 }
+
+setListener(msg => { // iframe msg
+  if (msg.ready) sendIn({ slide: channel.slide }, iframe)
+})
 </script>
 
 <template>
-  <iframe v-if="channel.slide" class="w-screen h-screen all-transition" :class="show ? 'opacity-100' : 'opacity-0'" ref="iframe" :src="channel.slide.surl" />
+  <div class="w-screen h-screen all-transition" :class="show ? 'opacity-100' : 'opacity-0'">
+    <iframe v-if="channel.slide" class="w-full h-full" ref="iframe" :src="channel.slide.surl" :key="channel.slide.index + channel.slide.surl" />
+  </div>
 </template>
