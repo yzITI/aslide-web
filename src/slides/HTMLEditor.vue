@@ -13,6 +13,8 @@ function submit () {
 </script>
 
 <template>
-  <textarea v-model="html"></textarea>
-  <button @click="submit">Submit</button>
+  <div class="p-2">
+    <textarea class="block w-full" v-model="html"></textarea>
+    <button class="block" @click="submit">Submit</button>
+  </div>
 </template>

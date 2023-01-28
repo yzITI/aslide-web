@@ -11,7 +11,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 async function goto () {
   show = false
   await sleep(300)
-  router.push('/@/' + channel)
+  router.push('/view/' + channel)
 }
 </script>
 
