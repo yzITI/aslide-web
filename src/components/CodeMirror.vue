@@ -11,7 +11,6 @@ let el = $ref(), editor = null
 const update = debounce(() => {
   const v = editor?.state?.doc?.toString()
   if (!v) return
-    console.log(v)
   if (v !== props.modelValue) emits('update:modelValue', v)
 })
 const inputListener = EditorView.updateListener.of(v => {
@@ -28,8 +27,16 @@ onMounted(() => {
 })
 
 watch(() => props.modelValue, v => {
+  console.log(v)
+
   if (!editor) return
-  if (v !== editor.state.doc) editor.dispatch({ newDoc: v })
+  if (v !== editor.state.doc.toString()) editor.dispatch({
+    changes: {
+      from: 0,
+      to: editor.state.doc.length,
+      insert: v
+    }
+  })
 })
 </script>
 
