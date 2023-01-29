@@ -2,9 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  height: 100%;
+}
 body {
   margin: 0px;
   font-family: sans-serif;
+  height: 100%;
+}
+div#app {
+  height: 100%;
 }
 * {
   outline: none;

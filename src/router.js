@@ -6,8 +6,8 @@ const index = {
   '/home': () => import('./views/Home.vue'),
   '/': () => import('./views/Entry.vue'),
 
-  '/@/html': () => import('./slides/HTML.vue'),
-  '/@/html-editor': () => import('./slides/HTMLEditor.vue')
+  '/slide/html': () => import('./slides/HTML.vue'),
+  '/editor/html': () => import('./slides/HTMLEditor.vue')
 }
 
 const routes = []

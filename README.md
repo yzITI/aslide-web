@@ -1,29 +1,50 @@
-# template-vue
+# aslide-web
 
-Vite + Vue 3 + VueRouter 4 + TailwindCSS + Heroicons
+Frontend of ASlide
 
-CDN Library: axios + SweetAlert2 + NProgress + Momentjs
+## Model
 
-## Get Started
-
-Click **Use Template** or this [link](https://github.com/yzITI/template-vue/generate).
-
-Change project name in  `package.json` and `index.html`
-```
-"name": "project-name"
-
-<!-- you may change lang as well -->
-<title>Your Title</title>
+```js
+slide {
+  index: 0, // slide index
+  surl: 'slide url',
+  eurl: 'editor url',
+  data: {/* slide data */}
+}
 ```
 
-Install dependency
+## Slide Development
 
-```
-npm i
+Slide and editor urls are embedded using 
+
+```html
+<iframe sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts"></iframe>
 ```
 
-Run dev server
+It will interact with ASlide framework through `window.postMessage` transferring **JSON string** of objects, with the following protocol:
 
-```
-npm run dev
+```js
+iframeMsgOut { // from iframe to ASlide
+  // must be sent first
+  ready: 1, // start listening
+
+  // ONLY for slide:
+  response: {/* resp object */}, // submit resp
+
+  // ONLY for editor:
+  slide: {/* slide object */} // update slide
+}
+
+iframeMsgIn {
+  slide: {/* slide object */}, // update slide
+  // ONLY for editor:
+  responses: {
+    [session]: {/* resp object */},
+    ...
+  },
+  sessions: {
+    [session]: {/* session info */},
+    ...
+  }
+}
 ```
