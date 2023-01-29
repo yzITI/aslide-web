@@ -28,7 +28,7 @@ async function join () {
 }
 if (ws.session) join()
 
-ws.handle = msg => {
+ws.handle = async msg => {
   if (msg.session) {
     initChannel()
     join()
@@ -36,15 +36,17 @@ ws.handle = msg => {
   }
   if (msg.alert) Swal.fire(msg.alert.title, msg.alert.html, msg.alert.icon)
   channel.time = Date.now()
-  if (typeof msg.slide !== 'undefined') {
-    channel.slide = msg.slide
-    if (msg.slide && info.index !== msg.slide.index) {
+  if (typeof msg.slide !== 'undefined') { // slide update
+    if (msg.slide && info.index !== msg.slide.index) { // different slide
+      show = false
       info.index = msg.slide.index
       ws.call('view.info', info)
-      show = false
-      setTimeout(() => { show = true }, 500)
+      await sleep(300)
     }
+    channel.slide = msg.slide
     sendIn({ slide: channel.slide }, iframe)
+    await sleep(300)
+    show = true
   }
   if (channel.slide) state.loading = false
   else state.loading = 'Waiting for Host'
