@@ -44,6 +44,7 @@ ws.handle = async msg => {
       await sleep(300)
     }
     channel.slide = msg.slide
+    document.title = channel.slide?.title || 'ASlide'
     sendIn({ slide: channel.slide }, iframe)
     await sleep(300)
     show = true
@@ -54,11 +55,12 @@ ws.handle = async msg => {
 
 setListener(msg => { // iframe msg
   if (msg.ready) sendIn({ slide: channel.slide }, iframe)
+  if (msg.response) ws.call('view.response', msg.response)
 })
 </script>
 
 <template>
   <div class="w-screen h-screen all-transition" :class="show ? 'opacity-100' : 'opacity-0'">
-    <iframe v-if="channel.slide" class="w-full h-full" ref="iframe" :src="channel.slide.surl" :key="channel.slide.index + channel.slide.surl" />
+    <iframe v-if="channel.slide" class="w-full h-full" ref="iframe" :src="channel.slide.surl" :key="String(channel.slide.index + channel.slide.surl)" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts" />
   </div>
 </template>

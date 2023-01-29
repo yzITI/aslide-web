@@ -7,6 +7,7 @@ Frontend of ASlide
 ```js
 slide {
   index: 0, // slide index
+  title: 'slide show title',
   surl: 'slide url',
   eurl: 'editor url',
   data: {/* slide data */}
@@ -38,11 +39,11 @@ iframeMsgOut { // from iframe to ASlide
 iframeMsgIn {
   slide: {/* slide object */}, // update slide
   // ONLY for editor:
-  responses: {
+  responses: { // incremental update
     [session]: {/* resp object */},
     ...
   },
-  sessions: {
+  sessions: { // incremental update
     [session]: {/* session info */},
     ...
   }

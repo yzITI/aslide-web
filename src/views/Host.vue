@@ -7,12 +7,14 @@ import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon } from 
 
 const parseTime = t => moment(t).format('YYYY-MM-DD HH:mm:ss')
 
+let title = $ref('')
+
 let slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
 
 function push () {
   const s = slides[playing]
   if (!s) return playing = -1
-  ws.call('host.slide', { index: playing, surl: s.surl, data: s.data })
+  ws.call('host.slide', { index: playing, title, surl: s.surl, data: s.data })
 }
 
 watch(() => slides[playing], push)
@@ -31,7 +33,11 @@ function stop () {
 
 let iframe = $ref()
 setListener(msg => { // msg from iframe editor
-  if (msg.ready) sendIn({ slide: slides[editing] }, iframe)
+  if (msg.ready) sendIn({
+    slide: slides[editing],
+    sessions: channel.sessions,
+    responses:channel.responses
+  }, iframe)
   if (msg.slide) { // update slide
     for (const k in msg.slide) slides[editing][k] = msg.slide[k]
     if (editing === playing) play(playing) // current slide
@@ -64,6 +70,7 @@ ws.handle = msg => {
   if (msg.responses) {
     for (const r in msg.responses) channel.responses[r] = msg.responses[r]
   }
+  if (editing === playing) sendIn({ sessions: msg.sessions, responses: msg.responses }, iframe)
   if (typeof msg.slide !== 'undefined') {
     channel.slide = msg.slide
     if (channel.slide) channel.sessions[ws.session].index = channel.slide.index
@@ -85,8 +92,9 @@ function leave () {
 <template>
   <div class="w-screen h-screen flex bg-gray-100 min-w-[1024px]">
     <div class="flex flex-col grow h-full"><!-- slide control -->
-      <div class="flex p-2"><!-- title -->
-        <input class="font-bold text-xl block w-2/3 px-2 rounded" placeholder="Title">
+      <div class="flex p-2 flex items-center justify-between"><!-- title -->
+        <input class="font-bold text-xl block grow px-2 rounded" placeholder="Title" v-model="title">
+        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2">Save</button>
       </div>
       <div class="flex grow p-2 h-0"><!-- slides -->
         <div class="flex flex-col w-48 overflow-auto"><!-- slide list -->
@@ -125,7 +133,7 @@ function leave () {
               <input class="rounded px-2 font-mono border mx-2 block grow" v-model="slides[editing].eurl" placeholder="Editor URL">
             </label>
           </div>
-          <iframe v-if="slides[editing].eurl" class="grow" ref="iframe" :src="slides[editing].eurl" :key="editing + slides[editing].eurl" />
+          <iframe v-if="slides[editing].eurl" class="grow" ref="iframe" :src="slides[editing].eurl" :key="editing + slides[editing].eurl" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts" />
         </div>
       </div>
     </div>
