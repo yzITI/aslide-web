@@ -9,6 +9,7 @@ body {
   margin: 0px;
   font-family: sans-serif;
   height: 100%;
+  padding-right: 0 !important;
 }
 div#app {
   height: 100%;

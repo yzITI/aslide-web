@@ -1,15 +1,42 @@
 <script setup>
+import srpc from '../utils/srpc.js'
+import state from '../state.js'
 import { watch } from 'vue'
 import ws from '../ws.js'
 import { setListener, sendIn } from '../utils/iframe.js'
 import EditableList from '../components/EditableList.vue'
 import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/solid'
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute(), router = useRouter()
+
+const _id = route.params.id
+
+let title = $ref(''), slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
+
+async function init () {
+  state.loading = 'Loading...'
+  const res = await srpc.get(state.user?.token, _id)
+  state.loading = false
+  if (!res) {
+    await Swal.fire('Error', 'Cannot fetch your show', 'error')
+    return router.push('/home')
+  }
+  title = res.title
+  slides = res.slides
+}
+
+async function save () {
+  const data = { slides, title }
+  state.loading = 'Loading...'
+  const res = await srpc.put(state.user?.token, _id, data)
+  state.loading = false
+  if (!res) return Swal.fire('Error', 'Fail to save', 'error')
+}
+
+if (!state.user) router.push('/')
+else init()
 
 const parseTime = t => moment(t).format('YYYY-MM-DD HH:mm:ss')
-
-let title = $ref('')
-
-let slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
 
 function push () {
   const s = slides[playing]
@@ -94,7 +121,7 @@ function leave () {
     <div class="flex flex-col grow h-full"><!-- slide control -->
       <div class="flex p-2 flex items-center justify-between"><!-- title -->
         <input class="font-bold text-xl block grow px-2 rounded" placeholder="Title" v-model="title">
-        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2">Save</button>
+        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" @click="save">Save</button>
       </div>
       <div class="flex grow p-2 h-0"><!-- slides -->
         <div class="flex flex-col w-48 overflow-auto"><!-- slide list -->

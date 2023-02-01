@@ -27,8 +27,6 @@ onMounted(() => {
 })
 
 watch(() => props.modelValue, v => {
-  console.log(v)
-
   if (!editor) return
   if (v !== editor.state.doc.toString()) editor.dispatch({
     changes: {
