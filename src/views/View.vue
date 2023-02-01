@@ -61,6 +61,6 @@ setListener(msg => { // iframe msg
 
 <template>
   <div class="w-screen h-screen all-transition" :class="show ? 'opacity-100' : 'opacity-0'">
-    <iframe v-if="channel.slide" class="w-full h-full" ref="iframe" :src="channel.slide.surl" :key="String(channel.slide.index + channel.slide.surl)" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts" />
+    <iframe v-if="channel.slide" class="w-full h-full" ref="iframe" :src="channel.slide.surl" :key="String(channel.slide.index + channel.slide.surl)" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-same-origin allow-scripts" />
   </div>
 </template>

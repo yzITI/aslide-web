@@ -19,7 +19,7 @@ slide {
 Slide and editor urls are embedded using 
 
 ```html
-<iframe sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts"></iframe>
+<iframe sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts allow-same-origin"></iframe>
 ```
 
 It will interact with ASlide framework through `window.postMessage` transferring **JSON string** of objects, with the following protocol:
