@@ -1,7 +1,7 @@
 <script setup>
 import srpc from '../utils/srpc.js'
 import state from '../state.js'
-import plugins from '../slides/index.js'
+import plugins from '../plugins/index.js'
 import { watch } from 'vue'
 import ws from '../ws.js'
 import { setListener, sendIn } from '../utils/iframe.js'
