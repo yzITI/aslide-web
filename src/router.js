@@ -7,7 +7,8 @@ const index = {
   '/login': () => import('./views/Login.vue'),
   '/': () => import('./views/Entry.vue'),
 
-  '/plugins/html-editor': () => import('./plugins/HTMLEditor.vue')
+  '/plugins/html-editor': () => import('./plugins/HTMLEditor.vue'),
+  '/plugins/rich-text-editor': () => import('./plugins/RichTextEditor.vue')
 }
 
 const routes = []

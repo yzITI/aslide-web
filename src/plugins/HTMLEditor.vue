@@ -15,7 +15,7 @@ setListener(msg => {
 
 watch($$(html), debounce(v => {
   sendOut({ slide: { data: { html } } })
-}), 1000)
+}))
 </script>
 
 <template>

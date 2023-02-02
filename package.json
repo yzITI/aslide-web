@@ -10,6 +10,8 @@
     "@codemirror/lang-html": "^6.4.1",
     "@heroicons/vue": "^2.0.13",
     "codemirror": "^6.0.1",
+    "katex": "^0.16.4",
+    "quill": "^1.3.7",
     "sortablejs": "^1.15.0",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"

@@ -72,7 +72,7 @@ let plugin = $computed(() => {
   const s = slides[editing]
   if (!s) return ''
   for (const n in plugins) {
-    if (plugins[n].surl === s.surl && plugin[n].eurl === s.eurl) return n
+    if (plugins[n].surl === s.surl && plugins[n].eurl === s.eurl) return n
   }
   return 'Customize'
 })
