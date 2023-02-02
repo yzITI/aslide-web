@@ -1,30 +1,26 @@
 <script setup>
+import { watch } from 'vue'
 import { sendOut, setListener } from '../utils/iframe.js'
+import { debounce } from '../utils/utils.js'
 import CodeMirror from '../components/CodeMirror.vue'
-const defaultValue = '<div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">\n  <h1 style="font-size: 3rem">Hello, world!</h1>\n  <p style="color: #555;">This is an HTML slide!</p>\n</div>\n'
+const defaultValue = '<div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center;">\n  <h1 style="font-size: 3rem;">Hello, world!</h1>\n  <p style="color: #555; font-size: 2rem;">This is an HTML slide!</p>\n</div>\n'
 let html = $ref(''), old = $ref('')
 sendOut({ ready: 1 })
 
 setListener(msg => {
   if (msg.slide) {
-    old = msg.slide.data?.html || ''
-    html = old || defaultValue
+    html = msg.slide.data?.html || defaultValue
   }
 })
 
-function submit () {
-  if (old === html) return
+watch($$(html), debounce(v => {
   sendOut({ slide: { data: { html } } })
-  old = html
-}
+}), 1000)
 </script>
 
 <template>
   <div class="p-2 relative h-full">
-    <div class="flex items-center justify-between my-2">
-      <h2 class="font-bold text-lg">HTML Slide Editor</h2>
-      <button class="text-white font-bold rounded shadow all-transition hover:shadow-md px-3 py-1" :class="old === html ? 'bg-gray-500' : 'bg-blue-500'" @click="submit">{{ old === html ? 'Up to date' : 'Update' }}</button>
-    </div>
-    <CodeMirror v-model="html" />
+    <h2 class="font-bold text-lg my-2">HTML Slide Editor</h2>
+    <CodeMirror v-model="html" class="bg-white" />
   </div>
 </template>

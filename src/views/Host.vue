@@ -48,12 +48,19 @@ function push () {
 
 watch(() => slides[playing], push)
 
-function play (i, force) {
+function play (i) {
   if (!channel.time || !slides[i]) return
   if (playing === i) push() // force update
   playing = i
   editing = i
 }
+
+// keyboard play
+document.addEventListener('keyup', e => {
+  const code = e.code
+  if (code === 'ArrowLeft') play(playing - 1)
+  if (code === 'ArrowRight') play(playing + 1)
+}, false)
 
 function stop () {
   ws.call('host.slide', null)

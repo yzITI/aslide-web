@@ -21,7 +21,7 @@ const inputListener = EditorView.updateListener.of(v => {
 onMounted(() => {
   editor = new EditorView({
     doc: props.modelValue || '',
-    extensions: [basicSetup, html(), inputListener],
+    extensions: [basicSetup, html(), inputListener, EditorView.lineWrapping],
     parent: el
   })
 })
