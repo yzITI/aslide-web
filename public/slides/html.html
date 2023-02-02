@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASlide HTML</title>
+</head>
+<body style="height: 100%; margin: 0px; font-family: sans-serif;">
+  <div id="container" style="height: 100%;"></div>
+  <script type="text/javascript">
+    function sendOut (msg) {
+      const win = window.parent
+      if (!win) return
+      win.postMessage(JSON.stringify(msg), '*')
+    }
+
+    function setListener (f) {
+      window.onmessage = e => {
+        try { f(JSON.parse(e.data)) }
+        catch { return }
+      }
+    }
+
+    const el = document.getElementById('container')
+
+    sendOut({ ready: 1 })
+    setListener(msg => {
+      if (msg.slide) el.innerHTML = msg.slide.data?.html || ''
+    })
+  </script>
+</body>
+</html>

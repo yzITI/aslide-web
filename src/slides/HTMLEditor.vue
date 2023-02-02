@@ -1,7 +1,7 @@
 <script setup>
 import { sendOut, setListener } from '../utils/iframe.js'
 import CodeMirror from '../components/CodeMirror.vue'
-const defaultValue = '<div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">\n  <h1 style="font-size: 3rem; font-weight: bold;">Hello, world!</h1>\n</div>\n'
+const defaultValue = '<div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">\n  <h1 style="font-size: 3rem">Hello, world!</h1>\n  <p style="color: #555;">This is an HTML slide!</p>\n</div>\n'
 let html = $ref(''), old = $ref('')
 sendOut({ ready: 1 })
 
@@ -14,7 +14,7 @@ setListener(msg => {
 
 function submit () {
   if (old === html) return
-  sendOut({ slide: { data: { html }, surl: './#/slide/html' } })
+  sendOut({ slide: { data: { html } } })
   old = html
 }
 </script>

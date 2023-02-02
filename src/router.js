@@ -7,7 +7,6 @@ const index = {
   '/login': () => import('./views/Login.vue'),
   '/': () => import('./views/Entry.vue'),
 
-  '/slide/html': () => import('./slides/HTML.vue'),
   '/editor/html': () => import('./slides/HTMLEditor.vue')
 }
 
