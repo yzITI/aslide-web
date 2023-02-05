@@ -1,13 +1,14 @@
 <script setup>
 import srpc from '../utils/srpc.js'
 import state from '../state.js'
+import { download } from '../utils/utils.js'
 import plugins from '../plugins/index.js'
 import { watch } from 'vue'
 import ws from '../ws.js'
 import { setListener, sendIn } from '../utils/iframe.js'
 import EditableList from '../components/EditableList.vue'
 import Wrapper from '../components/Wrapper.vue'
-import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon, ChevronDownIcon } from '@heroicons/vue/24/solid'
+import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon, ChevronDownIcon, ArrowUpTrayIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/solid'
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute(), router = useRouter()
 
@@ -33,6 +34,28 @@ async function save () {
   const res = await srpc.put(state.user?.token, _id, data)
   state.loading = false
   if (!res) return Swal.fire('Error', 'Fail to save', 'error')
+}
+
+let fileInput = $ref()
+
+function exportFile () {
+  const data = btoa(String.fromCharCode(...new TextEncoder('utf-8').encode(JSON.stringify(slides))))
+  download(data, title + '.aslide')
+}
+
+function importFile () {
+  const f = fileInput.files?.[0]
+  if (!f) return
+  title = f.name.replace(/\.aslide$/, '')
+  const reader = new FileReader()
+  reader.addEventListener('load', e => {
+    const value = e.target.result
+    const value_latin1 = atob(value)
+    const json = new TextDecoder('utf-8').decode(Uint8Array.from({ length: value_latin1.length }, (element, index) => value_latin1.charCodeAt(index)))
+    slides = JSON.parse(json)
+    Swal.fire('Success', `Imported file <b>${f.name}</b>`, 'success')
+  })
+  reader.readAsText(f)
 }
 
 if (!state.user) router.push('/')
@@ -147,7 +170,10 @@ function leave () {
     <div class="flex flex-col grow h-full"><!-- slide control -->
       <div class="flex p-2 flex items-center justify-between"><!-- title -->
         <input class="font-bold text-xl block grow px-2 rounded" placeholder="Title" v-model="title">
-        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" @click="save">Save</button>
+        <input type="file" ref="fileInput" @change="importFile" class="hidden" accept=".aslide">
+        <button class="bg-blue-100 p-2 font-bold all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Import from file" @click="fileInput.click()"><ArrowUpTrayIcon class="w-4" /></button>
+        <button class="bg-blue-100 p-2 font-bold all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Export to file" @click="exportFile"><ArrowDownTrayIcon class="w-4" /></button>
+        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save">Save</button>
       </div>
       <div class="flex grow p-2 h-0"><!-- slides -->
         <div class="flex flex-col w-48 overflow-auto"><!-- slide list -->
@@ -167,7 +193,7 @@ function leave () {
               </div>
             </template>
           </EditableList>
-          <div class="border px-2 py-1 rounded cursor-pointer my-1 all-transition hover:border-blue-500 hover:text-blue-500 hover:bg-white" @click="slides.push({})">
+          <div class="border px-2 py-1 rounded cursor-pointer my-1 all-transition hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50" @click="slides.push({})">
             <PlusIcon class="w-5 m-auto" />
           </div>
         </div>
