@@ -1,6 +1,6 @@
 export default {
   'Rich Text': {
-    surl: './plugins/rich-text.html',
+    surl: './#/plugins/rich-text',
     eurl: './#/plugins/rich-text-editor'
   },
   'HTML': {
