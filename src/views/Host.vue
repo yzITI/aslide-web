@@ -74,7 +74,9 @@ watch(() => slides[playing], push)
 function play (i) {
   if (!channel.time || !slides[i]) return
   if (playing === i) push() // force update
+  if (playing === i) return
   playing = i
+  if (editing === playing) sendIn({ sessions: channel.sessions, responses: channel.responses }, iframe)
   editing = i
 }
 
@@ -112,7 +114,7 @@ setListener(msg => { // msg from iframe editor
   if (msg.ready) sendIn({
     slide: slides[editing],
     sessions: channel.sessions,
-    responses:channel.responses
+    responses: channel.responses
   }, iframe)
   if (msg.slide) { // update slide
     for (const k in msg.slide) slides[editing][k] = msg.slide[k]
@@ -142,11 +144,12 @@ ws.handle = msg => {
       if (msg.sessions[s]) channel.sessions[s] = msg.sessions[s]
       else delete channel.sessions[s]
     }
+    if (editing === playing) sendIn({ sessions: channel.sessions }, iframe)
   }
   if (msg.responses) {
     for (const r in msg.responses) channel.responses[r] = msg.responses[r]
+    if (editing === playing) sendIn({ responses: channel.responses }, iframe)
   }
-  if (editing === playing) sendIn({ sessions: msg.sessions, responses: msg.responses }, iframe)
   if (typeof msg.slide !== 'undefined') {
     channel.slide = msg.slide
     if (channel.slide) channel.sessions[ws.session].index = channel.slide.index

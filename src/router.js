@@ -9,7 +9,9 @@ const index = {
 
   '/plugins/html-editor': () => import('./plugins/HTMLEditor.vue'),
   '/plugins/rich-text': () => import('./plugins/RichText.vue'),
-  '/plugins/rich-text-editor': () => import('./plugins/RichTextEditor.vue')
+  '/plugins/rich-text-editor': () => import('./plugins/RichTextEditor.vue'),
+  '/plugins/choice': () => import('./plugins/Choice.vue'),
+  '/plugins/choice-editor': () => import('./plugins/ChoiceEditor.vue')
 }
 
 const routes = []

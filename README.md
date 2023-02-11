@@ -39,11 +39,11 @@ pluginMsgOut { // from plugin to ASlide
 pluginMsgIn { // from ASlide to plugin
   slide: {/* slide object */}, // update slide
   // ONLY for editor:
-  responses: { // incremental update
+  responses: { // full update
     [session]: {/* resp object */},
     ...
   },
-  sessions: { // incremental update
+  sessions: { // full update
     [session]: {/* session info */},
     ...
   }
