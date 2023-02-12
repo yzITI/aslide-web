@@ -26,19 +26,26 @@ It could interact with ASlide framework through `window.postMessage` transferrin
 
 ```js
 pluginMsgOut { // from plugin to ASlide
+
   // must be sent first
   ready: 1, // start listening
 
-  // ONLY for slide:
+  // ONLY for slide page:
   response: {/* resp object */}, // submit resp
 
-  // ONLY for editor:
+  // ONLY for editor page:
   slide: {/* slide object */} // update slide
+
 }
 
 pluginMsgIn { // from ASlide to plugin
-  slide: {/* slide object */}, // update slide
-  // ONLY for editor:
+
+  session: 'current session id', // reply on ready
+
+  // update slide
+  slide: {/* slide object */},
+
+  // ONLY for editor page:
   responses: { // full update
     [session]: {/* resp object */},
     ...

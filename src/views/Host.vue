@@ -112,6 +112,7 @@ function usePlugin (t) {
 let iframe = $ref()
 setListener(msg => { // msg from iframe editor
   if (msg.ready) sendIn({
+    session: ws.session,
     slide: slides[editing],
     sessions: channel.sessions,
     responses: channel.responses

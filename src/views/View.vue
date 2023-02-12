@@ -54,7 +54,7 @@ ws.handle = async msg => {
 }
 
 setListener(msg => { // iframe msg
-  if (msg.ready) sendIn({ slide: channel.slide }, iframe)
+  if (msg.ready) sendIn({ slide: channel.slide, session: ws.session }, iframe)
   if (msg.response) ws.call('view.response', msg.response)
 })
 </script>
