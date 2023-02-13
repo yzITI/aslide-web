@@ -26,7 +26,7 @@ router.afterEach(async (to, from) => {
   NProgress.done()
   if (from.path.indexOf('/host/') === 0 || from.path.indexOf('/view/') === 0) {
     if (!wsM) wsM = await import('./ws.js')
-    wsM.default.call('view.leave')
+    wsM.default.call('view.leave') // leave channel
   }
 })
 
