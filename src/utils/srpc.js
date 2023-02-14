@@ -1,4 +1,4 @@
-let url = 'https://s.yzzx.org/aslide/srpc'
+let url = 'https://a.aauth.link/aslide'
 
 const getFunction = name => ((...args) => fetch(url, {
   method: 'POST', mode: 'cors', cache: 'no-cache',

@@ -26,10 +26,10 @@ const random = () => Math.random().toString(36).substring(2)
 
 async function create () {
   state.loading = 'Loading...'
-  const _id = random(), title = 'Untitled'
-  const res = await srpc.put(state.user?.token, _id, { title, slides: [] })
+  const show = random(), title = 'Untitled'
+  const res = await srpc.put(state.user?.token, show, { title, slides: [] })
   state.loading = false
-  shows.push({ _id, title, time: Date.now() })
+  shows.push({ show, title, time: Date.now() })
   shows.sort((a, b) => b.time - a.time)
 }
 
@@ -42,7 +42,7 @@ async function del (s) {
   })
   if (!isConfirmed) return
   state.loading = 'Loading...'
-  const res = await srpc.del(state.user?.token, s._id)
+  const res = await srpc.del(state.user?.token, s.show)
   state.loading = false
   shows = shows.filter(x => x !== s)
 }
@@ -53,7 +53,7 @@ async function del (s) {
     <h1 class="text-xl sm:text-3xl font-bold my-3">Your Shows</h1>
     <p v-if="!shows.length">You don't have show now. Create one?</p>
     <div v-else>
-      <div v-for="s in shows" class="my-2 p-2 shadow all-transition hover:shadow-md rounded bg-white flex items-center justify-between cursor-pointer" @click="router.push('/host/' + s._id)">
+      <div v-for="s in shows" class="my-2 p-2 shadow all-transition hover:shadow-md rounded bg-white flex items-center justify-between cursor-pointer" @click="router.push('/host/' + s.show)">
         <div class="flex items-center text-gray-800">
           <TvIcon class="w-8 mx-3" />
           <div>

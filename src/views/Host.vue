@@ -12,13 +12,13 @@ import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon, Chevro
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute(), router = useRouter()
 
-const _id = route.params.id
+const id = route.params.id
 
 let title = $ref(''), slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
 
 async function init () {
   state.loading = 'Loading...'
-  const res = await srpc.get(state.user?.token, _id)
+  const res = await srpc.get(state.user?.token, id)
   state.loading = false
   if (!res) {
     await Swal.fire('Error', 'Cannot fetch your show', 'error')
@@ -31,7 +31,7 @@ async function init () {
 async function save () {
   const data = { slides, title }
   state.loading = 'Loading...'
-  const res = await srpc.put(state.user?.token, _id, data)
+  const res = await srpc.put(state.user?.token, id, data)
   state.loading = false
   if (!res) return Swal.fire('Error', 'Fail to save', 'error')
 }
