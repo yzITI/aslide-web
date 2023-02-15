@@ -10,7 +10,7 @@ sendOut({ ready: 1 })
 
 let html = $ref(''), options = $ref([]), sessions = $ref({}), responses = $ref({})
 
-let sessionCot = $computed(() => Object.keys(sessions).length - 1)
+let sessionCot = $computed(() => Object.keys(sessions).length)
 let responseCot = $computed(() => Object.keys(sessions).filter(x => responses[x]).length)
 const optionCot = key => Object.keys(sessions).filter(x => responses[x] === key).length
 

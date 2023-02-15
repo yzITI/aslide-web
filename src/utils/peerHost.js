@@ -6,6 +6,7 @@ let peer = null, interval = null
 export const state = reactive({
   id: false,
   on: false,
+  time: 0,
   slide: null,
   sessions: {},
   responses: {}
@@ -16,11 +17,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 export const getPeer = () => peer
 
-export function start (channel, server = '0.peerjs.com') {
+export function start (channel, opt = { host: 's.yzzx.org', path: '/peerjs', secure: true }) {
   state.id = ''
   state.on = true
   if (peer) peer.destroy()
-  peer = new Peer(`ASLIDE-${base64url(channel)}-HOST`, { host: server })
+  peer = new Peer(`ASLIDE-${base64url(channel)}-HOST`, opt)
   peer.on('error', e => {
     console.log('[Peer] Error: ' + e.type)
     switch (e.type) {
@@ -50,19 +51,23 @@ export function start (channel, server = '0.peerjs.com') {
     state.id = ''
     await sleep(100) // wait for peer object
     if (!peer.disconnected || peer.destroyed) return
-    console.log('[Peer] Disconnected, reconnect in 5s')
+    console.log('[Peer] Disconnected from server, reconnect in 5s')
     setTimeout(() => {
       if (peer.disconnected && !peer.destroyed) peer.reconnect()
     }, 5e3)
   })
   peer.on('connection', conn => {
-    conn.on('open', () => { state.sessions[conn.peer] = {} })
-    conn.on('close', () => { delete state.sessions[conn.peer] })
-    conn.on('data', d => {
-      console.log('[Peer] Data: ', d)
+    conn.on('open', () => {
+      state.sessions[conn.peer] = {}
+      conn.send({ slide: state.slide })
     })
+    conn.on('close', () => { delete state.sessions[conn.peer] })
+    conn.on('data', d => { handle(d, conn.peer) })
   })
-  peer.on('open', id => { state.id = id })
+  peer.on('open', id => {
+    state.time = Date.now()
+    state.id = id
+  })
   if (!interval) interval = setInterval(() => { // auto delete dead connections
     const conns = peer?.connections
     if (!conns) return
@@ -71,13 +76,34 @@ export function start (channel, server = '0.peerjs.com') {
         if (c?.peerConnection?.iceConnectionState === 'disconnected') c.close()
       }
     }
-  }, 5e3)
+  }, 3e3)
 }
 
 export function stop () {
   state.on = false
   clearInterval(interval)
   interval = null
+  state.time = 0
+  state.slide = null
+  state.sessions = {}
+  state.responses = {}
   if (!peer) return
   peer.destroy()
+}
+
+function handle (d, peer) {
+  state.time = Date.now()
+  if (d.response) state.responses[peer] = d.response
+  if (d.session) state.sessions[peer] = d.session
+}
+
+export function slide (data) {
+  const conns = peer?.connections
+  state.slide = data
+  if (!conns) return
+  for (const k in conns) {
+    for (const c of conns[k]) {
+      c.send({ slide: data })
+    }
+  }
 }

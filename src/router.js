@@ -5,8 +5,6 @@ const index = {
   '/host/:id': () => import('./views/Host.vue'),
   '/home': () => import('./views/Home.vue'),
   '/login': () => import('./views/Login.vue'),
-  '/test/host': () => import('./views/TestHost.vue'),
-  '/test/view': () => import('./views/TestView.vue'),
   '/': () => import('./views/Entry.vue'),
 
   '/plugins/html-editor': () => import('./plugins/HTMLEditor.vue'),
@@ -22,13 +20,17 @@ const router = createRouter({ history: createWebHashHistory(), routes })
 
 router.beforeEach(() => { NProgress.start() })
 
-let wsM = null
+let host = null, view = null
 router.afterEach(async (to, from) => {
   Swal.close()
   NProgress.done()
-  if (from.path.indexOf('/host/') === 0 || from.path.indexOf('/view/') === 0) {
-    if (!wsM) wsM = await import('./ws.js')
-    wsM.default.call('view.leave') // leave channel
+  if (from.path.indexOf('/host/') === 0) {
+    if (!host) host = await import('./utils/peerHost.js')
+    host.stop()
+  }
+  if (from.path.indexOf('/view/') === 0) {
+    if (!view) view = await import('./utils/peerView.js')
+    view.stop()
   }
 })
 

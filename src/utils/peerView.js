@@ -1,12 +1,14 @@
 import { Peer } from 'peerjs'
 import { reactive } from 'vue'
 
-let peer = null, interval = null
+let peer = null, interval = null, conn = null
 
 export const state = reactive({
   id: false,
   on: false,
+  time: 0,
   host: false, // host id
+  peer: false, // connected id
   slide: null
 })
 
@@ -18,11 +20,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 export const getPeer = () => peer
 
-export function start (channel, server = '0.peerjs.com') {
+export function start (channel, opt = { host: 's.yzzx.org', path: '/peerjs', secure: true }) {
   state.id = ''
   state.on = true
+  state.time = 0
   if (peer) peer.destroy()
-  peer = new Peer(`ASLIDE-${random()}-VIEW`, { host: server })
+  peer = new Peer(random() + random(), opt)
   peer.on('error', e => {
     console.log('[Peer] Error: ' + e.type)
     switch (e.type) {
@@ -33,6 +36,8 @@ export function start (channel, server = '0.peerjs.com') {
         Swal.fire('Error', 'Cannot reach the Peer Server', 'error')
         break
       case 'peer-unavailable': // todo
+        console.log('[Peer] Reconnecting to host')
+        if (state.host) connect()
         break
       case 'unavailable-id': // not possible by chance
         break
@@ -51,12 +56,15 @@ export function start (channel, server = '0.peerjs.com') {
     state.id = ''
     await sleep(100) // wait for peer object
     if (!peer.disconnected || peer.destroyed) return
-    console.log('[Peer] Disconnected, reconnect in 5s')
+    console.log('[Peer] Disconnected from server, reconnect in 5s')
     setTimeout(() => {
       if (peer.disconnected && !peer.destroyed) peer.reconnect()
     }, 5e3)
   })
-  peer.on('open', id => { state.id = id })
+  peer.on('open', id => {
+    state.id = id
+    if (state.host) connect()
+  })
   if (!interval) interval = setInterval(() => { // auto delete dead connections
     const conns = peer?.connections
     if (!conns) return
@@ -72,19 +80,47 @@ export function stop () {
   state.on = false
   clearInterval(interval)
   interval = null
+  state.time = 0
+  state.slide = null
   if (!peer) return
   peer.destroy()
 }
 
 export function connect (channel) {
-  if (!peer.open) return
-  const conn = peer.connect(`ASLIDE-${base64url(channel)}-HOST`)
-  conn.on('open', () => { state.host = conn.peer })
-  conn.on('close', () => { // todo: reconnect
-    state.host = false
+  if (channel) state.host = `ASLIDE-${base64url(channel)}-HOST`
+  if (!state.host || !peer.open) return
+  if (conn) conn.close()
+  conn = peer.connect(state.host)
+  conn.on('open', () => { state.peer = conn.peer })
+  conn.on('close', async () => {
+    state.peer = false
+    await sleep(100) // wait for conn object
+    if (conn.open || !state.host) return
+    console.log('[Peer] Disconnected from peer, reconnect in 5s')
+    setTimeout(() => {
+      if (!conn.open && state.host) connect()
+    }, 5e3)
   })
-  conn.on('data', d => {
-    console.log('[Peer] Data: ', d)
-  })
+  conn.on('data', handle)
   return conn
+}
+
+export function close () {
+  state.host = ''
+  if (conn) conn.close()
+}
+
+function handle (d) {
+  state.time = Date.now()
+  if (typeof d.slide !== 'undefined') state.slide = d.slide
+}
+
+export function session (data) {
+  if (!conn?.open) return
+  conn.send({ session: data })
+}
+
+export function response (data) {
+  if (!conn?.open) return
+  conn.send({ response: data })
 }

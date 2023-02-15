@@ -40,10 +40,11 @@ pluginMsgOut { // from plugin to ASlide
 
 pluginMsgIn { // from ASlide to plugin
 
-  session: 'current session id', // reply on ready
-
   // update slide
   slide: {/* slide object */},
+
+  // ONLY for slide page
+  session: 'current session id', // reply on ready
 
   // ONLY for editor page:
   responses: { // full update
