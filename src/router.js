@@ -5,6 +5,8 @@ const index = {
   '/host/:id': () => import('./views/Host.vue'),
   '/home': () => import('./views/Home.vue'),
   '/login': () => import('./views/Login.vue'),
+  '/test/host': () => import('./views/TestHost.vue'),
+  '/test/view': () => import('./views/TestView.vue'),
   '/': () => import('./views/Entry.vue'),
 
   '/plugins/html-editor': () => import('./plugins/HTMLEditor.vue'),

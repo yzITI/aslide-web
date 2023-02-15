@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 
-export const SS =  window.sessionStorage
+export const SS = window.sessionStorage
 
 export const state = reactive({
   loading: false,

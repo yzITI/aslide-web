@@ -1,0 +1,83 @@
+import { Peer } from 'peerjs'
+import { reactive } from 'vue'
+
+let peer = null, interval = null
+
+export const state = reactive({
+  id: false,
+  on: false,
+  slide: null,
+  sessions: {},
+  responses: {}
+})
+
+const base64url = s => window.btoa(s).replaceAll('=', '').replace('+', '-').replace('/', '_')
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+export const getPeer = () => peer
+
+export function start (channel, server = '0.peerjs.com') {
+  state.id = ''
+  state.on = true
+  if (peer) peer.destroy()
+  peer = new Peer(`ASLIDE-${base64url(channel)}-HOST`, { host: server })
+  peer.on('error', e => {
+    console.log('[Peer] Error: ' + e.type)
+    switch (e.type) {
+      case 'browser-incompatible':
+        Swal.fire('Error', 'Incompatible Browser', 'error')
+        break
+      case 'server-error':
+        Swal.fire('Error', 'Cannot reach the Peer Server', 'error')
+        break
+      case 'peer-unavailable': // host makes no connection
+        break
+      case 'unavailable-id':
+        Swal.fire('Error', 'Channel Occupied', 'error')
+        break
+      case 'invalid-id':
+      case 'invalid-key':
+      case 'disconnected':
+      case 'network':
+      case 'webrtc':
+      case 'socket-error':
+      case 'socket-closed':
+      case 'ssl-unavailable':
+        break
+    }
+  })
+  peer.on('disconnected', async () => {
+    state.id = ''
+    await sleep(100) // wait for peer object
+    if (!peer.disconnected || peer.destroyed) return
+    console.log('[Peer] Disconnected, reconnect in 5s')
+    setTimeout(() => {
+      if (peer.disconnected && !peer.destroyed) peer.reconnect()
+    }, 5e3)
+  })
+  peer.on('connection', conn => {
+    conn.on('open', () => { state.sessions[conn.peer] = {} })
+    conn.on('close', () => { delete state.sessions[conn.peer] })
+    conn.on('data', d => {
+      console.log('[Peer] Data: ', d)
+    })
+  })
+  peer.on('open', id => { state.id = id })
+  if (!interval) interval = setInterval(() => { // auto delete dead connections
+    const conns = peer?.connections
+    if (!conns) return
+    for (const k in conns) {
+      for (const c of conns[k]) {
+        if (c?.peerConnection?.iceConnectionState === 'disconnected') c.close()
+      }
+    }
+  }, 5e3)
+}
+
+export function stop () {
+  state.on = false
+  clearInterval(interval)
+  interval = null
+  if (!peer) return
+  peer.destroy()
+}
