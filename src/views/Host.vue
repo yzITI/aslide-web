@@ -65,7 +65,7 @@ const parseTime = t => moment(t).format('YYYY-MM-DD HH:mm:ss')
 
 function push () {
   const s = slides[playing]
-  if (!s) return playing = -1
+  if (!s) return stop()
   host.slide({ index: playing, title, surl: s.surl, data: s.data })
 }
 
@@ -223,9 +223,9 @@ function start () {
       <div class="w-full grow overflow-auto p-2"><!-- session list -->
         <h3 class="font-bold text-lg">Sessions ({{ Object.keys(host.state.sessions).length }})</h3>
         <hr>
-        <div v-for="(s, id) in host.state.sessions" class="flex justify-between items-center my-0.5 px-1">
-          {{ s?.name || 'Anonymous' }}
-          <div class="all-transition rounded-full px-2 text-xs" v-if="playing >= 0" :class="playing === s.index ? 'bg-green-600' : 'bg-gray-500'">{{ typeof s.index === 'undefined' ? 'N/A' : s.index }}</div>
+        <div v-for="(s, id) in host.state.sessions" class="flex items-center my-0.5 px-1">
+          <div class="all-transition rounded-full px-2 text-xs mr-2" :class="playing === s.index ? 'bg-green-600' : 'bg-gray-500'">{{ (playing < 0 || typeof s.index === 'undefined') ? 'N/A' : s.index }}</div>
+          <span class="all-transition" :class="s.on ? 'text-gray-50' : 'text-gray-400'">{{ s?.name || 'Anonymous' }}</span>
         </div>
       </div>
     </div>
