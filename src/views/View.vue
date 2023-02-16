@@ -7,21 +7,17 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const id = route.params.id
 
-let iframe = $ref(), info = $ref({ on: document.visibilityState !== 'hidden' }), show = $ref(false), slide = $ref(null)
+let iframe = $ref(), show = $ref(false), slide = $ref(null)
+let info = $ref({
+  name: state.user?.name || '',
+  on: document.visibilityState !== 'hidden'
+})
 
-function init () {
-  view.start()
-  info = {}
-}
-init()
+state.loading = 'Connecting...'
+view.start()
+view.connect(id)
 
 const sleep = ms => new Promise(r => setTimeout(r, ms))
-
-async function connect () {
-  state.loading = 'Connecting...'
-  view.connect(id)
-}
-connect()
 
 watch(() => view.state.peer, v => {
   if (!v) return state.loading = 'Connecting...'
@@ -56,6 +52,19 @@ document.onvisibilitychange = e => {
   info.on = document.visibilityState === 'visible'
   view.session(info)
 }
+
+async function askName () {
+  if (info.name) return
+  const { value } = await Swal.fire({
+    title: 'Your Name?',
+    input: 'text',
+    inputPlaceholder: 'Enter your name',
+    icon: 'question'
+  })
+  info.name = value
+  view.session(info)
+}
+askName()
 </script>
 
 <template>
