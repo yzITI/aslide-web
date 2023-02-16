@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const id = route.params.id
 
-let iframe = $ref(), info = $ref({ on: true }), show = $ref(false), slide = $ref(null)
+let iframe = $ref(), info = $ref({ on: document.visibilityState !== 'hidden' }), show = $ref(false), slide = $ref(null)
 
 function init () {
   view.start()
@@ -24,7 +24,9 @@ async function connect () {
 connect()
 
 watch(() => view.state.peer, v => {
-  state.loading = v ? 'Waiting for host' : 'Connecting...'
+  if (!v) return state.loading = 'Connecting...'
+  state.loading = 'Waiting for host'
+  view.session(info)
 })
 
 watch(() => view.state.slide, async v => {
