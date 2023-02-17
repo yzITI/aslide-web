@@ -22,7 +22,6 @@ setListener(msg => {
   }
   if (msg.sessions) sessions = msg.sessions
   if (msg.responses) responses = msg.responses
-  console.log(msg)
 })
 
 function publish () {
