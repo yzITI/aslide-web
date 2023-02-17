@@ -43,6 +43,10 @@ watch(() => view.state.slide, async v => {
   show = true
 })
 
+watch(() => view.state.message, async v => {
+  sendIn({ message: view.state.message }, iframe)
+})
+
 setListener(msg => { // iframe msg
   if (msg.ready) sendIn({ slide: view.state.slide, session: view.state.id }, iframe)
   if (msg.response) view.response(msg.response)
@@ -52,6 +56,8 @@ document.onvisibilitychange = e => {
   info.on = document.visibilityState === 'visible'
   view.session(info)
 }
+
+window.onbeforeunload = e => { view.stop() }
 
 async function askName () {
   if (info.name) return

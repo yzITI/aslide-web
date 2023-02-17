@@ -107,3 +107,14 @@ export function slide (data) {
     }
   }
 }
+
+export function messages (data) {
+  const conns = peer?.connections
+  if (!conns) return
+  for (const k in data) {
+    if (!conns[k]) continue
+    for (const c of conns[k]) {
+      c.send({ message: data[k] })
+    }
+  }
+}

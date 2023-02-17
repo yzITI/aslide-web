@@ -91,6 +91,7 @@ function stop () {
   host.slide(null)
   playing = -1
 }
+window.onbeforeunload = e => { host.stop() }
 
 let pluginSelector = $ref(false)
 let plugin = $computed(() => {
@@ -120,6 +121,7 @@ setListener(msg => { // msg from iframe editor
     for (const k in msg.slide) slides[editing][k] = msg.slide[k]
     if (editing === playing) play(playing) // current slide
   }
+  if (msg.messages) host.messages(msg.messages)
 })
 
 let channel = $ref('')
@@ -223,9 +225,9 @@ function start () {
       <div class="w-full grow overflow-auto p-2"><!-- session list -->
         <h3 class="font-bold text-lg">Sessions ({{ Object.keys(host.state.sessions).length }})</h3>
         <hr>
-        <div v-for="(s, id) in host.state.sessions" class="flex items-center my-0.5 px-1">
+        <div v-for="(s, id) in host.state.sessions" class="flex items-center my-0.5 px-1 overflow-x-hidden">
           <div class="all-transition rounded-full px-2 text-xs mr-2" :class="playing === s.index ? 'bg-green-600' : 'bg-gray-500'">{{ (playing < 0 || typeof s.index === 'undefined') ? 'N/A' : s.index }}</div>
-          <span class="all-transition" :class="s.on ? 'text-gray-50' : 'text-gray-400'">{{ s?.name || 'Anonymous' }}</span>
+          <span class="all-transition whitespace-nowrap" :class="s.on ? 'text-gray-50' : 'text-gray-400'">{{ s?.name || 'Anonymous' }}</span>
         </div>
       </div>
     </div>

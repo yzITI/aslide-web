@@ -9,7 +9,8 @@ export const state = reactive({
   time: 0,
   host: false, // host id
   peer: false, // connected id
-  slide: null
+  slide: null,
+  message: null
 })
 
 const base64url = s => window.btoa(s).replaceAll('=', '').replace('+', '-').replace('/', '_')
@@ -113,6 +114,7 @@ export function close () {
 function handle (d) {
   state.time = Date.now()
   if (typeof d.slide !== 'undefined') state.slide = d.slide
+  if (typeof d.message !== 'undefined') state.message = d.message
 }
 
 export function session (data) {

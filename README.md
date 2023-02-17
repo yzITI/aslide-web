@@ -1,18 +1,15 @@
-# aslide-web
+# ASlide
 
-Frontend of ASlide
+a P2P Realtime Slideshow Platform based on WebRTC.
 
-## Model
+## Communication
 
-```js
-slide {
-  index: 0, // slide index
-  title: 'slide show title',
-  surl: 'slide url',
-  eurl: 'editor url',
-  data: {/* slide data */}
-}
-```
+The following data are transferred between host and viewers using WebRTC:
+
+- `session { index, on, name }`: (viewer -> host) the session info and status of the viewer
+- `slide { index, title, surl, data }`: (host -> viewers) the broadcasted data of current slide
+- `response`: (viewer -> host) the response data
+- `message`: (host -> viewer) the direct data to particular viewers
 
 ## Plugin Development
 
@@ -35,7 +32,10 @@ pluginMsgOut { // from plugin to ASlide
 
   // ONLY for editor page:
   slide: {/* slide object */} // update slide
-
+  messages: { // direct message to viewer
+    [session]: {/* message object */},
+    ...
+  }
 }
 
 pluginMsgIn { // from ASlide to plugin
@@ -45,6 +45,7 @@ pluginMsgIn { // from ASlide to plugin
 
   // ONLY for slide page
   session: 'current session id', // reply on ready
+  message: {/* message object */}, // direct message from host
 
   // ONLY for editor page:
   responses: { // full update
