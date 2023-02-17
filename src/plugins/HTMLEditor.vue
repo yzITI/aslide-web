@@ -5,7 +5,7 @@ import { debounce } from '../utils/utils.js'
 import CodeMirror from '../components/CodeMirror.vue'
 const templates = {
   'Cover': '<div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; box-sizing: border-box;">\n  <h1 style="font-size: 3rem;">Hello, world!</h1>\n  <p style="color: #555; font-size: 2rem;">This is an HTML slide!</p>\n</div>\n',
-
+  'Content': '<div style="height: 100%; display: flex; flex-direction: column; justify-content: space-around; padding: 4rem; box-sizing: border-box;">\n   <h1 style="font-size: 3rem;">Title</h1>\n  <p style="color: #555; font-size: 2rem;">1. First...</p>\n  <p style="color: #555; font-size: 2rem;">2. Second...</p>\n <p style="color: #555; font-size: 2rem;">3. Third...</p>\n</div>\n',
 }
 let html = $ref('')
 sendOut({ ready: 1 })
