@@ -11,9 +11,8 @@ window.katex = katex
 
 onMounted(() => {
   editor = new Quill(el, {
-    modules: {
-      toolbar: false
-    },
+    modules: { toolbar: false },
+    readOnly: true,
     theme: 'snow'
   })
   sendOut({ ready: 1 })
