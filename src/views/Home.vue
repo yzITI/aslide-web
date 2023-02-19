@@ -87,7 +87,7 @@ function dropFile (e) {
         </div>
       </div>
     </div>
-    <button title="Create New" class="fixed right-10 bottom-10 rounded-full bg-blue-500 text-white p-3 shadow all-transition hover:shadow-md z-10" @click="create"><PlusIcon class="w-8" /></button>
+    <button title="Create New" class="fixed right-10 bottom-10 rounded-full bg-blue-500 text-white p-3 shadow all-transition hover:shadow-md z-10" @click="create()"><PlusIcon class="w-8" /></button>
     <button title="Import from File" class="fixed right-10 bottom-28 rounded-full bg-blue-100 text-blue-500 p-3 all-transition hover:bg-blue-200 z-10" @click="fileInput.click"><ArrowUpTrayIcon class="w-8" /></button>
     <input type="file" class="hidden" ref="fileInput" @change="upload(fileInput.files[0])">
   </div>

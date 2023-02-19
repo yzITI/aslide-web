@@ -173,8 +173,8 @@ function start () {
             </div>
             <Wrapper :show="pluginSelector"><!-- slide plugin selecor -->
               <div class="grid grid-cols-5 xl:grid-cols-6 py-2 text-gray-500 font-bold text-sm">
-                <button v-for="(t, n) in plugins" class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin(t)">{{ n }}</button>
                 <button class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin({})">Customize</button>
+                <button v-for="(t, n) in plugins" class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin(t)">{{ n }}</button>
               </div>
             </Wrapper>
             <Wrapper :show="plugin === 'Customize'" class="py-1"><!-- customize slide urls -->
