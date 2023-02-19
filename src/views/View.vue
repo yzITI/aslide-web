@@ -67,7 +67,7 @@ async function askName () {
     inputPlaceholder: 'Enter your name',
     icon: 'question'
   })
-  info.name = value
+  info.name = value.substring(0, 20)
   view.session(info)
 }
 askName()

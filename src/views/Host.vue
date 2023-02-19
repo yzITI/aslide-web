@@ -138,7 +138,7 @@ function start () {
         <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save">Save</button>
       </div>
       <div class="flex grow p-2 h-0"><!-- slides -->
-        <div class="flex flex-col w-48 overflow-auto"><!-- slide list -->
+        <div class="flex flex-col w-56 overflow-auto"><!-- slide list -->
           <h3 class="font-bold text-lg flex items-center justify-between">
             Slides
             <div class="flex items-center justify-center text-blue-300" v-if="host.state.id">
@@ -148,14 +148,17 @@ function start () {
             </div>
           </h3>
           <EditableList :list="slides" item-class="border rounded px-2 py-1 bg-white my-1">
-            <template #item="{ elment: el, index: i }">
-              <div class="flex items-center cursor-pointer text-gray-700" :class="editing === i && 'font-bold text-black'" @click="editing = i">
-                <PlayIcon class="w-5 mr-2 all-transition" :class="playing === i ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(i)" />
-                Slide {{ i }}
+            <template #item="{ element: el, index: i }">
+              <div class="flex items-center cursor-pointer text-gray-700 grow" :class="editing === i && 'font-bold text-black'" @click="editing = i">
+                <PlayIcon class="w-5 mr-1 all-transition" :class="playing === i ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(i)" />
+                {{ i }}.
+                <div class="grow mx-1">
+                  <input class="min-w-full w-0 bg-transparent" v-model="el.name">
+                </div>
               </div>
             </template>
           </EditableList>
-          <div class="border px-2 py-1 rounded cursor-pointer my-1 all-transition hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50" @click="slides.push({})">
+          <div class="border px-2 py-1 rounded cursor-pointer my-1 all-transition hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50" @click="slides.push({ name: 'New Slide' })">
             <PlusIcon class="w-5 m-auto" />
           </div>
         </div>
