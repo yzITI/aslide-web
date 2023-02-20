@@ -48,11 +48,11 @@ pluginMsgIn { // from ASlide to plugin
   message: {/* message object */}, // direct message from host
 
   // ONLY for editor page:
-  responses: { // full update
+  responses: { // incremental update
     [session]: {/* resp object */},
     ...
   },
-  sessions: { // full update
+  sessions: { // incremental update
     [session]: {/* session info */},
     ...
   }
