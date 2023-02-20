@@ -10,5 +10,9 @@ export default {
   'Choice': {
     surl: './#/plugins/choice',
     eurl: './#/plugins/choice-editor'
+  },
+  'Chat': {
+    surl: './#/plugins/chat',
+    eurl: './#/plugins/chat-editor'
   }
 }

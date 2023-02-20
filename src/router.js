@@ -11,7 +11,9 @@ const index = {
   '/plugins/rich-text': () => import('./plugins/RichText.vue'),
   '/plugins/rich-text-editor': () => import('./plugins/RichTextEditor.vue'),
   '/plugins/choice': () => import('./plugins/Choice.vue'),
-  '/plugins/choice-editor': () => import('./plugins/ChoiceEditor.vue')
+  '/plugins/choice-editor': () => import('./plugins/ChoiceEditor.vue'),
+  '/plugins/chat': () => import('./plugins/Chat.vue'),
+  '/plugins/chat-editor': () => import('./plugins/ChatEditor.vue')
 }
 
 const routes = []
