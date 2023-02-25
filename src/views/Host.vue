@@ -109,17 +109,14 @@ setListener(msg => { // msg from iframe editor
 
 let channel = $ref('')
 
-watch(() => host.state.sessions, v => {
-  if (playing === editing) sendIn({
-    sessions: host.state.sessions
-  }, iframe)
-}, { deep: true })
+host.handles.sessions = v => {
+  sendIn({ sessions: v }, iframe)
+}
 
-watch(() => host.state.responses, v => {
-  if (playing === editing) sendIn({
-    responses: host.state.responses
-  }, iframe)
-}, { deep: true })
+host.handles.responses = v => {
+  if (playing === editing) sendIn({ responses: v }, iframe)
+}
+window.host = host
 
 let viewUrl = $computed(() => window.location.href.replace(/\/host\/(.*)/, '/view/' + channel))
 

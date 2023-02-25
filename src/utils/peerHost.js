@@ -12,6 +12,8 @@ export const state = reactive({
   responses: {}
 })
 
+export const handles = {}
+
 const base64url = s => window.btoa(s).replaceAll('=', '').replace('+', '-').replace('/', '_')
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
@@ -59,9 +61,13 @@ export function start (channel, opt = { host: 's.yzzx.org', path: '/peerjs', sec
   peer.on('connection', conn => {
     conn.on('open', () => {
       state.sessions[conn.peer] = {}
+      if (handles.sessions) handles.sessions({ [conn.peer]: {} })
       conn.send({ slide: state.slide })
     })
-    conn.on('close', () => { delete state.sessions[conn.peer] })
+    conn.on('close', () => {
+      delete state.sessions[conn.peer]
+      if (handles.sessions) handles.sessions({ [conn.peer]: null })
+    })
     conn.on('data', d => { handle(d, conn.peer) })
   })
   peer.on('open', id => {
@@ -93,8 +99,14 @@ export function stop () {
 
 function handle (d, peer) {
   state.time = Date.now()
-  if (d.response) state.responses[peer] = d.response
-  if (d.session) state.sessions[peer] = d.session
+  if (d.response) {
+    state.responses[peer] = d.response
+    if (handles.responses) handles.responses({ [peer]: d.response })
+  }
+  if (d.session) {
+    state.sessions[peer] = d.session
+    if (handles.sessions) handles.sessions({ [peer]: d.session })
+  }
 }
 
 export function slide (data) {
