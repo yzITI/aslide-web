@@ -32,9 +32,9 @@ async function response() {
 </script>
 
 <template>
-  <div class="w-full h-full bg-gray-500">
+  <div class="w-screen h-screen fixed top-0 left-0 bg-gray-500">
     <div class="w-full max-w-screen-md mx-auto h-full flex flex-col justify-center bg-gray-100 shadow-md">
-      <div v-if="html" class="shadow w-full p-2 bg-white" v-html="html"></div>
+      <div v-if="html" class="shadow w-full p-2 bg-white relative" v-html="html"></div>
       <div class="flex flex-col items-end w-full grow overflow-y-auto p-4">
         <template v-for="msg in chat">
           <div class="m-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%]" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'">{{ msg.content }}</div>

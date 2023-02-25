@@ -7,9 +7,11 @@ sendOut({ ready: 1 })
 
 let html = $ref(''), chat = $ref([]), sessions = $ref({})
 
-let target = $ref(''), msg = $ref('')
+let target = $ref(''), msg = $ref(''), thread = $ref('')
 let ok = $computed(() => msg.match(/\S/))
 let scroll = $ref()
+
+let displayChat = $computed(() => chat.filter(x => !thread || !x.target || x.target === thread))
 
 setListener(async msg => {
   if (msg.slide) {
@@ -38,7 +40,7 @@ async function send () {
     for (const k in sessions) payload[k] = msg
   } else payload[target] = msg
   sendOut({ messages: payload })
-  chat.push({ content: msg, self: true, target, label: target ? sessions[target]?.name : 'All' })
+  chat.push({ content: msg, self: true, target, label: 'To ' + (target ? sessions[target]?.name : 'All') })
   await nextTick()
   scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
   msg = ''
@@ -47,21 +49,37 @@ async function send () {
 watch($$(html), debounce(v => {
   sendOut({ slide: { data: { html } } })
 }))
+
+watch($$(thread), async v => {
+  await nextTick()
+  scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+})
 </script>
 
 <template>
   <div class="p-2 relative h-full">
     <div class="w-full h-full flex flex-col justify-center">
-      <textarea v-model="html" rows="1" placeholder="Chat Prompt" class="rounded p-1 shadow px-2"></textarea>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          Thread:
+          <select v-model="thread" class="m-2 mr-0 rounded p-1 max-w-[8rem] all-transition" :class="thread && 'ring'">
+            <option value="">All</option>
+            <option v-for="(s, id) in sessions" :value="id">{{ s.name || 'Anonymous' }}</option>
+          </select>
+          <span class="text-gray-500 text-xs mx-2">double click message to view the thread.</span>
+        </div>
+        <button class="bg-red-500 text-white font-bold text-sm shadow px-2 py-1 rounded" @click="chat = []">Clear</button>
+      </div>
+      <textarea v-model="html" rows="1" placeholder="Chat Prompt" class="rounded p-1 shadow px-2 shrink-0 relative"></textarea>
       <div class="flex flex-col items-end w-full grow overflow-y-auto p-4">
-        <template v-for="msg in chat">
-          <div class="text-xs text-gray-500 cursor-pointer mt-1 mx-2" :class="msg.self ? '' : 'self-start'" @click="target = msg.target">{{ msg.label }}</div>
-          <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target">{{ msg.content }}</div>
+        <template v-for="msg in displayChat">
+          <div class="text-xs text-gray-500 cursor-pointer mt-1 mx-2" :class="msg.self ? '' : 'self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.label }}</div>
+          <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.content }}</div>
         </template>
         <div ref="scroll"></div>
       </div>
       <div class="flex">
-        <select v-model="target" class="m-2 mr-0 rounded p-1 max-w-[6rem]">
+        <select v-model="target" class="m-2 mr-0 rounded p-1 max-w-[6rem] all-transition" :class="target && 'ring'">
           <option value="">All</option>
           <option v-for="(s, id) in sessions" :value="id">{{ s.name || 'Anonymous' }}</option>
         </select>
