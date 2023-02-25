@@ -2,7 +2,7 @@
 import { sendOut, setListener } from '../utils/iframe.js'
 sendOut({ ready: 1 })
 
-let html = $ref(''), chat = $ref(''), responses = $ref(null)
+let html = $ref(''), chat = $ref(''), person =$ref(''), responses = $ref(null)
 
 setListener(msg => {
   console.log(msg)
@@ -18,9 +18,10 @@ setListener(msg => {
 function sendchat(content) {
   sendOut()
 }
-
+console.log(responses)
 </script>
 
 <template>
   hello
+  <div>{{ responses }}</div>
 </template>

@@ -20,7 +20,7 @@ function response (key) {
 
 <template>
   <div class="w-full h-full bg-gray-500">
-    <div class="w-full max-w-screen-md mx-auto min-h-full flex flex-col justify-center align-center p-4 sm:p-10 bg-gray-100 shadow-md">
+    <div class="w-full max-w-screen-md mx-auto min-h-full flex flex-col justify-center p-4 sm:p-10 bg-gray-100 shadow-md">
       <div class="border rounded-lg m-4 p-4 bg-white">
         <div v-html="html" />
       </div>
