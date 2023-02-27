@@ -111,9 +111,12 @@ function handle (d, peer) {
 
 export function slide (data) {
   const conns = peer?.connections
+  if (state.slide && state.slide.index !== data?.index) {
+    state.responses = {} // clear response when changing slide
+  }
   state.slide = data
   if (!conns) return
-  for (const k in conns) {
+  for (const k in conns) { // broadcast
     for (const c of conns[k]) {
       c.send({ slide: data })
     }
