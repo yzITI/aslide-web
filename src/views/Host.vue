@@ -135,7 +135,7 @@ function start () {
         <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save">Save</button>
       </div>
       <div class="flex grow p-2 h-0"><!-- slides -->
-        <div class="flex flex-col w-56 overflow-auto"><!-- slide list -->
+        <div class="flex flex-col w-56 overflow-y-auto"><!-- slide list -->
           <h3 class="font-bold text-lg flex items-center justify-between">
             Slides
             <div class="flex items-center justify-center text-blue-300" v-if="host.state.id">
@@ -203,7 +203,7 @@ function start () {
         </div>
         <p v-if="host.state.on" class="font-mono select-all my-1" style="font-size: 0.65rem;">{{ viewUrl }}</p>
       </div>
-      <div class="w-full grow overflow-auto p-2"><!-- session list -->
+      <div class="w-full grow overflow-y-auto p-2"><!-- session list -->
         <h3 class="font-bold text-lg">Sessions ({{ Object.keys(host.state.sessions).length }})</h3>
         <hr>
         <div v-for="(s, id) in host.state.sessions" class="flex items-center my-0.5 px-1 overflow-x-hidden">
@@ -214,3 +214,19 @@ function start () {
     </div>
   </div>
 </template>
+
+<style scoped>
+.overflow-y-auto {
+  scrollbar-width: 0.4rem;
+}
+.overflow-y-auto::-webkit-scrollbar {
+  width: 0.4rem;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  border-radius: 0.4rem;
+  background: #ccc;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #ddd;
+}
+</style>

@@ -71,12 +71,12 @@ watch($$(thread), async v => {
         <button class="bg-red-500 text-white font-bold text-sm shadow px-2 py-1 rounded" @click="chat = []">Clear</button>
       </div>
       <textarea v-model="html" rows="1" placeholder="Chat Prompt" class="rounded p-1 shadow px-2 shrink-0 relative"></textarea>
-      <div class="flex flex-col items-end w-full grow overflow-y-auto p-4">
+      <div class="flex flex-col items-end w-full grow overflow-y-auto scrollbar p-4 pb-0">
         <template v-for="msg in displayChat">
           <div class="text-xs text-gray-500 cursor-pointer mt-1 mx-2" :class="msg.self ? '' : 'self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.label }}</div>
           <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.content }}</div>
         </template>
-        <div ref="scroll"></div>
+        <div ref="scroll" class="mt-4"></div>
       </div>
       <div class="flex">
         <select v-model="target" class="m-2 mr-0 rounded p-1 max-w-[6rem] all-transition" :class="target && 'ring'">
@@ -89,3 +89,13 @@ watch($$(thread), async v => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.overflow-y-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+</style>
