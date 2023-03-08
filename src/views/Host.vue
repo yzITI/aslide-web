@@ -2,7 +2,6 @@
 import srpc from '../utils/srpc.js'
 import state from '../state.js'
 import { download } from '../utils/utils.js'
-import plugins from '../plugins/index.js'
 import { watch } from 'vue'
 import * as host from '../utils/peerHost.js'
 import { setListener, sendIn } from '../utils/iframe.js'
@@ -16,9 +15,12 @@ const id = route.params.id
 
 let title = $ref(''), slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
 
+let plugins = $ref({})
+
 async function init () {
   state.loading = 'Loading...'
   const res = await srpc.get(state.user?.token, id)
+  plugins = await fetch('./plugins/index.json').then(r => r.json())
   state.loading = false
   if (!res) {
     await Swal.fire('Error', 'Cannot fetch your show', 'error')
