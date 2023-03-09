@@ -1,7 +1,12 @@
 <script setup>
 import { nextTick } from 'vue'
 import { sendOut, setListener } from '../utils/iframe.js'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const inverse = route.query.inverse // inverse color
 sendOut({ ready: 1 })
 
 let html = $ref(''), chat = $ref([]), resp = $ref('')
@@ -9,36 +14,54 @@ let scroll = $ref()
 
 let ok = $computed(() => resp.match(/\S/))
 
+async function refresh () {
+  await nextTick()
+  scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+}
+
 setListener(async msg => { // listen from ASlide
   if (msg.slide) {
     const data = msg.slide.data || {}
     html = data.html
   }
   if (msg.message) {
-    chat.push({ content: msg.message })
-    await nextTick()
-    scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    chat.push({ content: msg.message, html: parse(msg.message) })
+    refresh()
   }
 })
 
 async function response() {
   if (!ok) return
   sendOut({ response: resp })
-  chat.push({ content: resp, self: true })
-  await nextTick()
-  scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  chat.push({ content: resp, html: parse(resp), self: true })
+  refresh()
   resp = ''
+}
+
+function parseMath (s, regex, displayMode) {
+  let m
+  while (m = s.match(regex)) {
+    const res = katex.renderToString(m[1], { throwOnError: false, displayMode })
+    s = s.replace(m[0], res)
+  }
+  return s
+}
+
+function parse (s) {
+  s = parseMath(s, /\$\$(.*?)\$\$/, true)
+  s = parseMath(s, /\$(.*?)\$/, false)
+  s = parseMath(s, /\\\[(.*?)\\\]/, true)
+  s = parseMath(s, /\\\((.*?)\\\)/, false)
+  return s
 }
 </script>
 
 <template>
   <div class="w-screen h-screen fixed top-0 left-0 bg-gray-500">
-    <div class="w-full max-w-screen-md mx-auto h-full flex flex-col justify-center bg-gray-100 shadow-md">
+    <div ref="container" class="w-full max-w-screen-md mx-auto h-full flex flex-col justify-center bg-gray-100 shadow-md">
       <div v-if="html" class="shadow w-full p-2 bg-white relative" v-html="html"></div>
       <div class="flex flex-col items-end w-full grow overflow-y-auto p-4 pb-0">
-        <template v-for="msg in chat">
-          <div class="m-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%]" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'">{{ msg.content }}</div>
-        </template>
+        <div v-for="(msg, i) in chat" :key="i" class="m-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%]" :class="[(msg.self ? !inverse : inverse) ? 'bg-white' : 'bg-sky-600 text-white', msg.self || 'self-start']" v-html="msg.html"></div>
         <div ref="scroll" class="mt-4"></div>
       </div>
       <div class="flex">
