@@ -1,5 +1,6 @@
 <script setup>
 import { debounce } from '../utils/utils.js'
+import parse from '../utils/parse.js'
 import { watch, nextTick } from 'vue'
 import { sendOut, setListener } from '../utils/iframe.js'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'
@@ -12,6 +13,11 @@ let ok = $computed(() => msg.match(/\S/))
 let scroll = $ref()
 
 let displayChat = $computed(() => chat.filter(x => !thread || !x.target || x.target === thread))
+
+async function refresh () {
+  await nextTick()
+  scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+}
 
 setListener(async msg => {
   if (msg.slide) {
@@ -26,10 +32,9 @@ setListener(async msg => {
   }
   if (msg.responses) {
     for (const k in msg.responses) {
-      chat.push({ content: msg.responses[k], target: k, label: sessions[k]?.name || 'Anonymous' })
+      chat.push({ content: msg.responses[k], html: parse(msg.responses[k]), target: k, label: sessions[k]?.name || 'Anonymous' })
     }
-    await nextTick()
-    scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    refresh()
   }
 })
 
@@ -40,9 +45,8 @@ async function send () {
     for (const k in sessions) payload[k] = msg
   } else payload[target] = msg
   sendOut({ messages: payload })
-  chat.push({ content: msg, self: true, target, label: 'To ' + (target ? sessions[target]?.name : 'All') })
-  await nextTick()
-  scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  chat.push({ content: msg, html: parse(msg), self: true, target, label: 'To ' + (target ? sessions[target]?.name : 'All') })
+  refresh()
   msg = ''
 }
 
@@ -50,10 +54,7 @@ watch($$(html), debounce(v => {
   sendOut({ slide: { data: { html } } })
 }))
 
-watch($$(thread), async v => {
-  await nextTick()
-  scroll.scrollIntoView({ behavior: 'smooth', block: 'end' })
-})
+watch($$(thread), refresh)
 </script>
 
 <template>
@@ -74,7 +75,7 @@ watch($$(thread), async v => {
       <div class="flex flex-col items-end w-full grow overflow-y-auto scrollbar p-4 pb-0">
         <template v-for="msg in displayChat">
           <div class="text-xs text-gray-500 cursor-pointer mt-1 mx-2" :class="msg.self ? '' : 'self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.label }}</div>
-          <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.content }}</div>
+          <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target" @dblclick="thread = msg.target" v-html="msg.html"></div>
         </template>
         <div ref="scroll" class="mt-4"></div>
       </div>

@@ -1,8 +1,7 @@
 <script setup>
 import { nextTick } from 'vue'
 import { sendOut, setListener } from '../utils/iframe.js'
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
+import parse from '../utils/parse.js'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'
 import { useRoute } from 'vue-router'
 const route = useRoute()
@@ -22,7 +21,7 @@ async function refresh () {
 setListener(async msg => { // listen from ASlide
   if (msg.slide) {
     const data = msg.slide.data || {}
-    html = data.html
+    html = parse(data.html, false)
   }
   if (msg.message) {
     chat.push({ content: msg.message, html: parse(msg.message) })
@@ -36,23 +35,6 @@ async function response() {
   chat.push({ content: resp, html: parse(resp), self: true })
   refresh()
   resp = ''
-}
-
-function parseMath (s, regex, displayMode) {
-  let m
-  while (m = s.match(regex)) {
-    const res = katex.renderToString(m[1], { throwOnError: false, displayMode })
-    s = s.replace(m[0], res)
-  }
-  return s
-}
-
-function parse (s) {
-  s = parseMath(s, /\$\$(.*?)\$\$/, true)
-  s = parseMath(s, /\$(.*?)\$/, false)
-  s = parseMath(s, /\\\[(.*?)\\\]/, true)
-  s = parseMath(s, /\\\((.*?)\\\)/, false)
-  return s
 }
 </script>
 

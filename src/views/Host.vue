@@ -194,7 +194,7 @@ function start () {
     <div class="flex flex-col w-64 bg-gray-700 text-white"><!-- channel control -->
       <div class="w-full p-2 flex flex-col"><!-- control panel -->
         <h3 class="font-bold text-lg">Channel Control</h3>
-        <input v-model="channel" placeholder="Channel ID" :readonly="host.state.on" class="px-2 rounded text-black opacity-80 font-mono font-bold my-1">
+        <input v-model="channel" placeholder="Channel ID" :readonly="host.state.on" @keyup.enter="start" class="px-2 rounded text-black opacity-80 font-mono font-bold my-1">
         <div class="flex justify-between items-center my-1">          
           <div class="text-gray-300 text-xs flex items-center">
             <div class="rounded-full h-4 w-4 mr-2" :class="host.state.id ? 'bg-green-600' : 'bg-gray-500'" />
