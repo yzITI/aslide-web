@@ -43,7 +43,7 @@ async function response() {
     <div ref="container" class="w-full max-w-screen-md mx-auto h-full flex flex-col justify-center bg-gray-100 shadow-md">
       <div v-if="html" class="shadow w-full p-2 bg-white relative" v-html="html"></div>
       <div class="flex flex-col items-end w-full grow overflow-y-auto p-4 pb-0">
-        <div v-for="(msg, i) in chat" :key="i" class="m-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%]" :class="[(msg.self ? !inverse : inverse) ? 'bg-white' : 'bg-sky-600 text-white', msg.self || 'self-start']" v-html="msg.html"></div>
+        <div v-for="(msg, i) in chat" :key="i" class="m-1 p-1 px-2 border rounded-lg break-words w-fit max-w-[80%]" :class="[(msg.self ? !inverse : inverse) ? 'bg-white' : 'bg-sky-600 text-white', msg.self || 'self-start']" v-html="msg.html"></div>
         <div ref="scroll" class="mt-4"></div>
       </div>
       <div class="flex">

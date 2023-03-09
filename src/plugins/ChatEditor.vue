@@ -75,7 +75,7 @@ watch($$(thread), refresh)
       <div class="flex flex-col items-end w-full grow overflow-y-auto scrollbar p-4 pb-0">
         <template v-for="msg in displayChat">
           <div class="text-xs text-gray-500 cursor-pointer mt-1 mx-2" :class="msg.self ? '' : 'self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.label }}</div>
-          <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-all w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target" @dblclick="thread = msg.target" v-html="msg.html"></div>
+          <div class="mb-1 mx-1 p-1 px-2 border rounded-lg break-words w-fit max-w-[80%] cursor-pointer" :class="msg.self ? 'bg-white' : 'bg-sky-600 text-white self-start'" @click="target = msg.target" @dblclick="thread = msg.target" v-html="msg.html"></div>
         </template>
         <div ref="scroll" class="mt-4"></div>
       </div>

@@ -14,7 +14,7 @@ function parseMath (s, regex, displayMode) {
 function parseCode (s) {
   let m
   while (m = s.match(/\`\`\`([\S\s]*?)\n([\S\s]*?)\n\`\`\`/)) {
-    const res = `<pre class="p-2 bg-gray-700 text-white"><code class="language-${m[1]}">${m[2]}</code></pre>`
+    const res = `<pre class="p-2 bg-gray-700 text-white overflow-auto text-sm"><code class="language-${m[1]}">${m[2]}</code></pre>`
     s = s.replace(m[0], res)
   }
   while (m = s.match(/\`(.*?)\`/)) {
