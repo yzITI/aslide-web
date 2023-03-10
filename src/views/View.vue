@@ -13,7 +13,7 @@ let info = $ref({
   on: document.visibilityState !== 'hidden'
 })
 
-state.loading = 'Connecting...'
+state.loading = 'Connecting to host...'
 view.start()
 view.connect(id)
 
@@ -21,12 +21,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 watch(() => view.state.peer, v => {
   if (!v) return state.loading = 'Connecting to host...'
-  state.loading = 'Waiting for slide'
+  state.loading = 'Waiting for slide...'
   view.session(info)
 })
 
 watch(() => view.state.slide, async v => {
-  if (!v) return state.loading = 'Waiting for slide'
+  if (!v) return state.loading = 'Waiting for slide...'
   state.loading = false
   if (info.index === v.index) { // same slide
     sendIn({ slide: view.state.slide, session: view.state.id }, iframe)
