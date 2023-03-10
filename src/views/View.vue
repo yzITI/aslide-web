@@ -9,7 +9,7 @@ const id = route.params.id
 
 let iframe = $ref(), show = $ref(false), slide = $ref(null)
 let info = $ref({
-  name: state.user?.name || '',
+  name: state.user?.name || route.query.name.substring(0, 20) || '',
   on: document.visibilityState !== 'hidden'
 })
 
@@ -20,13 +20,13 @@ view.connect(id)
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 watch(() => view.state.peer, v => {
-  if (!v) return state.loading = 'Connecting...'
-  state.loading = 'Waiting for host'
+  if (!v) return state.loading = 'Connecting to host...'
+  state.loading = 'Waiting for slide'
   view.session(info)
 })
 
 watch(() => view.state.slide, async v => {
-  if (!v) return state.loading = 'Waiting for host'
+  if (!v) return state.loading = 'Waiting for slide'
   state.loading = false
   if (info.index === v.index) { // same slide
     sendIn({ slide: view.state.slide, session: view.state.id }, iframe)
@@ -60,7 +60,6 @@ document.onvisibilitychange = () => {
 window.onbeforeunload = () => { view.stop() }
 
 async function askName () {
-  if (info.name) return
   const { value } = await Swal.fire({
     title: 'Your Name?',
     input: 'text',
@@ -70,7 +69,7 @@ async function askName () {
   info.name = value.substring(0, 20)
   view.session(info)
 }
-askName()
+if (!info.name) askName()
 </script>
 
 <template>
