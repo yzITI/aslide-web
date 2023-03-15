@@ -9,7 +9,7 @@ const id = route.params.id
 
 let iframe = $ref(), show = $ref(false), slide = $ref(null)
 let info = $ref({
-  name: state.user?.name || route.query.name.substring(0, 20) || '',
+  name: state.user?.name || route.query.name?.substring(0, 20) || '',
   on: document.visibilityState !== 'hidden'
 })
 
@@ -73,7 +73,7 @@ if (!info.name) askName()
 </script>
 
 <template>
-  <div class="w-screen h-screen all-transition" :class="show ? 'opacity-100' : 'opacity-0'">
+  <div class="w-full h-full all-transition" :class="show ? 'opacity-100' : 'opacity-0'">
     <iframe v-if="slide" class="w-full h-full" ref="iframe" :src="slide.surl" :key="String(slide.index + slide.surl)" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-same-origin allow-scripts" />
   </div>
 </template>
