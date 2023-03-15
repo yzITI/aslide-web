@@ -47,7 +47,7 @@ async function response() {
         <div ref="scroll" class="mt-4"></div>
       </div>
       <div class="flex">
-        <input class="m-2 mr-0 p-2 grow" placeholder="Send message to Host" v-model="resp" @keyup.enter="response">
+        <input class="m-2 mr-0 p-2 grow" placeholder="Send message" v-model="resp" @keyup.enter="response">
         <button @click="response" class="w-18 p-2 px-3 font-bold shadow all-transition hover:shadow-md rounded text-white m-2" :class="ok ? 'bg-sky-500' : 'bg-gray-500'"><PaperAirplaneIcon class="w-5"/></button>
       </div>
     </div>
