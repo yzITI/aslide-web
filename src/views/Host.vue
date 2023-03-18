@@ -7,7 +7,7 @@ import * as host from '../utils/peerHost.js'
 import { setListener, sendIn } from '../utils/iframe.js'
 import EditableList from '../components/EditableList.vue'
 import Wrapper from '../components/Wrapper.vue'
-import { PlayIcon, PlusIcon, StopIcon, ChevronRightIcon, ChevronLeftIcon, ChevronDownIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/solid'
+import { PlayIcon, PlusIcon, PauseIcon, ChevronRightIcon, ChevronLeftIcon, ChevronDownIcon, ArrowDownTrayIcon, DocumentDuplicateIcon, TrashIcon } from '@heroicons/vue/24/solid'
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute(), router = useRouter()
 
@@ -93,6 +93,7 @@ function usePlugin (t) {
   if (!s) return
   s.surl = t.surl
   s.eurl = t.eurl
+  if (editing === playing) play(playing)
 }
 
 let iframe = $ref()
@@ -140,10 +141,10 @@ function start () {
         <div class="flex flex-col w-56 overflow-y-auto"><!-- slide list -->
           <h3 class="font-bold text-lg flex items-center justify-between">
             Slides
-            <div class="flex items-center justify-center text-blue-300" v-if="host.state.id">
-              <ChevronLeftIcon @click="play(playing - 1)" class="w-5 mx-1 all-transition hover:text-blue-500 cursor-pointer" :class="playing < 1 && 'invisible'" />
-              <StopIcon @click="stop" class="w-7 mx-1 all-transition hover:text-blue-500 cursor-pointer" :class="playing < 0 && 'invisible'" />
-              <ChevronRightIcon @click="play(playing + 1)" class="w-5 mx-1 all-transition hover:text-blue-500 cursor-pointer" :class="playing >= slides.length - 1 && 'invisible'" />
+            <div class="flex items-center justify-center text-blue-500" v-if="host.state.id">
+              <ChevronLeftIcon @click="play(playing - 1)" class="w-5 mx-1 all-transition hover:scale-125 cursor-pointer" :class="playing < 1 && 'invisible'" />
+              <PauseIcon @click="stop" class="w-6 mx-1 all-transition hover:scale-125 cursor-pointer" :class="playing < 0 && 'invisible'" />
+              <ChevronRightIcon @click="play(playing + 1)" class="w-5 mx-1 all-transition hover:scale-125 cursor-pointer" :class="playing >= slides.length - 1 && 'invisible'" />
             </div>
           </h3>
           <EditableList :list="slides" item-class="border rounded px-2 py-1 bg-white my-1">
@@ -157,8 +158,9 @@ function start () {
               </div>
             </template>
           </EditableList>
-          <div class="border px-2 py-1 rounded cursor-pointer my-1 all-transition hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50" @click="slides.push({ name: 'New Slide' })">
-            <PlusIcon class="w-5 m-auto" />
+          <div class="border p-2 rounded cursor-pointer my-1 all-transition hover:border-green-500 hover:text-green-500 hover:bg-green-50 flex items-center justify-center" @click="slides.push({ name: 'New Slide' })">
+            <PlusIcon class="w-5 mr-2" />
+            Add Slide
           </div>
         </div>
         <div class="flex flex-col grow p-2" v-if="slides[editing]"><!-- slide editor -->
@@ -168,7 +170,11 @@ function start () {
                 <h3 class="font-bold text-lg">Slide {{ editing }}</h3>
                 <button class="bg-blue-100 text-blue-500 font-bold text-sm px-2 py-1 rounded mx-2 all-transition hover:bg-blue-200 flex items-center" @click="pluginSelector = !pluginSelector">{{ plugin }}<ChevronDownIcon class="w-3 ml-1" /></button>
               </div>
-              <PlayIcon class="w-5 mr-2 all-transition cursor-pointer" :class="playing === editing ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(editing)" />
+              <div class="flex items-center">
+                <TrashIcon class="w-5 mr-2 all-transition cursor-pointer text-red-200 hover:text-red-500" @click.stop="slides.splice(editing, 1)" />
+                <DocumentDuplicateIcon class="w-5 mr-2 all-transition cursor-pointer text-green-200 hover:text-green-500" @click.stop="slides.splice(editing, 0, JSON.parse(JSON.stringify(slides[editing])))" />
+                <PlayIcon class="w-5 mr-2 all-transition cursor-pointer" :class="playing === editing ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(editing)" />
+              </div>
             </div>
             <Wrapper :show="pluginSelector"><!-- slide plugin selecor -->
               <div class="grid grid-cols-5 xl:grid-cols-6 py-2 text-gray-500 font-bold text-sm">
