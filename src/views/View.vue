@@ -74,6 +74,6 @@ if (!info.name) askName()
 
 <template>
   <div class="w-full h-full all-transition" :class="show ? 'opacity-100' : 'opacity-0'">
-    <iframe v-if="slide" class="w-full h-full" ref="iframe" :src="slide.surl" :key="String(slide.index + slide.surl)" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-same-origin allow-scripts" />
+    <iframe v-if="slide" class="w-full h-full" ref="iframe" :src="slide.surl" :key="String(slide.index + slide.surl)" sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-same-origin allow-scripts allow-downloads" />
   </div>
 </template>

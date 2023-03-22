@@ -16,7 +16,7 @@ The following data are transferred between host and viewers using WebRTC:
 Plugins of slides and editors can be any urls that are embedded using 
 
 ```html
-<iframe sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts allow-same-origin"></iframe>
+<iframe sandbox="allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts allow-same-origin allow-downloads"></iframe>
 ```
 
 It could interact with ASlide framework through `window.postMessage` transferring **JSON string** of objects, with the following protocol:
