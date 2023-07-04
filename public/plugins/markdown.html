@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASlide Markdown Plugin</title>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], formatError: (jax, err) => jax.formatError(err) },
+      options: { enableMenu: false }
+    }
+  </script>
+  <script type="text/javascript" src="https://cdn.staticfile.org/marked/5.1.0/marked.min.js"></script>
+  <script type="text/javascript" src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+  <link rel="stylesheet" href="../lib/monokai-sublime.min.css">
+  <script src="https://cdn.staticfile.org/highlight.js/11.8.0/highlight.min.js"></script>
+  <script src="https://cdn.staticfile.org/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+  <style>
+    .hljs-ln-numbers { user-select: none; color: #ccc; border-right: 1px solid #CCC; padding-right: 5px !important; }
+    .hljs-ln-code { padding-left: 10px !important; }
+    mjx-container { max-width: 95%; overflow: auto; }
+    blockquote {
+      margin: 0.5rem 0;
+      padding-left: 0.5rem;
+      border-left: 0.25rem solid gray;
+    }
+    body {
+      padding: 3rem;
+      font-family: sans-serif;
+    }
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script type="text/javascript">
+    function sendOut (msg) {
+      const win = window.parent
+      if (!win) return
+      win.postMessage(JSON.stringify(msg), '*')
+    }
+
+    function setListener (f) {
+      window.onmessage = e => {
+        try { f(JSON.parse(e.data)) }
+        catch { return }
+      }
+    }
+
+    const el = document.getElementById('container')
+
+    sendOut({ ready: 1 })
+    setListener(msg => {
+      if (!msg.slide) return
+      const markdown = msg.slide.data?.markdown || ''
+      el.innerHTML = marked.parse(markdown)
+      MathJax.typeset()
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad()
+    })
+  </script>
+</body>
+</html>

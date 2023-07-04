@@ -3,6 +3,10 @@
     "surl": "./plugins/html.html",
     "eurl": "./#/plugins/html-editor"
   },
+  "Markdown": {
+    "surl": "./plugins/markdown.html",
+    "eurl": "./#/plugins/markdown-editor"
+  },
   "Rich Text": {
     "surl": "./#/plugins/rich-text",
     "eurl": "./#/plugins/rich-text-editor"

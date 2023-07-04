@@ -62,7 +62,7 @@ function addOption () {
       {{ responseCot }} / {{ sessionCot }}
     </div>
     <label class="font-bold m-2 block">Choice Prompt: </label>
-    <CodeMirror v-model="html" class="bg-white" />
+    <CodeMirror v-model="html" class="bg-white" language="html" />
     <label class="font-bold m-2 block flex items-center">Choice Options: <PlusCircleIcon class="w-6 ml-2 cursor-pointer text-blue-500" @click="addOption" /></label>
     <div>
       <EditableList :list="options" item-class="border rounded bg-white my-2 p-2">

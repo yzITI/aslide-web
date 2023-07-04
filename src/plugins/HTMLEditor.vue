@@ -29,6 +29,6 @@ watch($$(html), debounce(v => {
       Templates:
       <button class="bg-blue-100 text-blue-500 font-bold px-2 rounded m-2 mr-0" v-for="(v, t) in templates" @click="html = v">{{ t }}</button>
     </div>
-    <CodeMirror v-model="html" class="bg-white" />
+    <CodeMirror v-model="html" class="bg-white" language="html" />
   </div>
 </template>
