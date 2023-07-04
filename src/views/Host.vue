@@ -1,6 +1,6 @@
 <script setup>
 import srpc from '../utils/srpc.js'
-import state from '../state.js'
+import { SS, state } from '../state.js'
 import { download } from '../utils/utils.js'
 import { watch } from 'vue'
 import * as host from '../utils/peerHost.js'
@@ -11,7 +11,7 @@ import { PlayIcon, PlusIcon, PauseIcon, ChevronRightIcon, ChevronLeftIcon, Chevr
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute(), router = useRouter()
 
-const id = route.params.id
+const id = route.params.id // local for local
 
 let title = $ref(''), slides = $ref([]), playing = $ref(-1), editing = $ref(-1)
 
@@ -19,7 +19,9 @@ let plugins = $ref({})
 
 async function init () {
   state.loading = 'Loading...'
-  const res = await srpc.get(state.user?.token, id)
+  const res = id === 'local'
+    ? JSON.parse(SS.local)
+    : await srpc.get(state.user?.token, id)
   plugins = await fetch('./plugins/index.json').then(r => r.json())
   state.loading = false
   if (!res) {
@@ -43,7 +45,7 @@ function exportFile () {
   download(data, title + '.aslide')
 }
 
-if (!state.user) router.push('/')
+if (!state.user && id !== 'local') router.push('/')
 else init()
 
 const parseTime = t => moment(t).format('YYYY-MM-DD HH:mm:ss')
@@ -135,7 +137,7 @@ function start () {
       <div class="flex p-2 flex items-center justify-between"><!-- title -->
         <input class="font-bold text-xl block grow px-2 rounded" placeholder="Title" v-model="title">
         <button class="bg-blue-100 p-2 font-bold all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Export to file" @click="exportFile"><ArrowDownTrayIcon class="w-4" /></button>
-        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save">Save</button>
+        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save" v-if="id !== 'local'">Save</button>
       </div>
       <div class="flex grow p-2 h-0"><!-- slides -->
         <div class="flex flex-col w-56 overflow-y-auto"><!-- slide list -->
