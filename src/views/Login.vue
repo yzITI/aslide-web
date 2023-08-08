@@ -19,7 +19,7 @@ if (token) {
 }
 
 if (state.user?.token) router.push('/home')
-else window.location.href = 'https://cn.aauth.link/#/launch/aslide'
+else window.location.href = 'https://auth.njsc.ltd/#/launch/aslide'
 </script>
 
 <template>
