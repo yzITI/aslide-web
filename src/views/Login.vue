@@ -4,9 +4,7 @@ import { state, login } from '../state'
 const route = useRoute(), router = useRouter()
 const token = route.query.token
 
-if (token) login(token)
-
-if (state.user?.token) router.push('/home')
+if (login(token)) router.push('/home')
 else window.location.href = 'https://auth.njsc.ltd/#/launch/aslide'
 </script>
 

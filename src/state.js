@@ -19,6 +19,7 @@ export function login (token) {
   payload.token = token
   SS.token = token
   state.user = payload
+  return payload
 }
 
 if (SS.token) login(SS.token)
