@@ -4,7 +4,9 @@ export const SS = window.sessionStorage
 
 export const state = reactive({
   loading: false,
-  user: null
+  user: null,
+  plugins: {},
+  screen: {}
 })
 
 export function login (token) {
@@ -23,5 +25,17 @@ export function login (token) {
 }
 
 if (SS.token) login(SS.token)
+
+async function fetchPlugins () {
+  state.plugins = await fetch('./plugins/index.json').then(r => r.json())
+}
+fetchPlugins()
+
+window.onresize = () => {
+  state.screen.lg = window.innerWidth < 1024
+  state.screen.md = window.innerWidth < 768
+  state.screen.sm = window.innerWidth < 640
+}
+window.onresize()
 
 export default state

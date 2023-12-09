@@ -56,7 +56,6 @@ function upload (f) {
     const value = e.target.result
     const value_latin1 = atob(value)
     const json = new TextDecoder('utf-8').decode(Uint8Array.from({ length: value_latin1.length }, (element, index) => value_latin1.charCodeAt(index)))
-    const slides = JSON.parse(json)
     create({ title: f.name.replace(/\.aslide$/, ''), slides: JSON.parse(json) })
   })
   reader.readAsText(f)
@@ -70,10 +69,9 @@ function dropFile (e) {
 
 <template>
   <div class="p-4 sm:p-10 min-h-screen bg-gray-100" @drop.prevent="dropFile" @dragenter.prevent @dragover.prevent>
-    <h1 class="text-xl sm:text-3xl font-bold my-3">Your Shows</h1>
-    <p class="text-gray-500">You can drag and drop slideshow files to import and upload.</p>
+    <h1 class="text-xl sm:text-3xl font-bold my-4">Your Shows</h1>
     <p v-if="!shows.length" class="my-2">You don't have slideshows now. Create one?</p>
-    <div v-else>
+    <div v-else class="pb-16">
       <div v-for="s in shows" class="my-2 p-2 shadow all-transition hover:shadow-md rounded bg-white flex items-center justify-between cursor-pointer" @click="router.push('/host/' + s.show)">
         <div class="flex items-center text-gray-800">
           <TvIcon class="w-8 mx-3" />
@@ -87,8 +85,10 @@ function dropFile (e) {
         </div>
       </div>
     </div>
-    <button title="Create New" class="fixed right-10 bottom-10 rounded-full bg-blue-500 text-white p-3 shadow all-transition hover:shadow-md z-10" @click="create()"><PlusIcon class="w-8" /></button>
-    <button title="Import from File" class="fixed right-10 bottom-28 rounded-full bg-blue-100 text-blue-500 p-3 all-transition hover:bg-blue-200 z-10" @click="fileInput.click"><ArrowUpTrayIcon class="w-8" /></button>
+    <div class="overflow-hidden rounded-full flex items-center fixed right-4 top-4 z-10 shadow-md">
+      <button title="Import from File" class="bg-white text-gray-700 p-2 pl-4 all-transition" @click="fileInput.click"><ArrowUpTrayIcon class="w-8" /></button>
+      <button title="Create New" class="bg-blue-500 text-white p-2 pr-4 shadow all-transition hover:shadow-md" @click="create()"><PlusIcon class="w-8" /></button>
+    </div>
     <input type="file" class="hidden" ref="fileInput" @change="upload(fileInput.files[0])">
   </div>
 </template>

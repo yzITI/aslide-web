@@ -1,0 +1,40 @@
+<script setup>
+import EditableList from './EditableList.vue'
+import * as host from '../utils/peerHost.js'
+import { PlayIcon, PlusIcon, PauseIcon, ChevronRightIcon, ChevronLeftIcon } from '@heroicons/vue/24/solid'
+const { playing, editing, slides } = defineProps(['playing', 'editing', 'slides'])
+const emits = defineEmits(['edit', 'play', 'stop'])
+
+const play = i => emits('play', i)
+const stop = () => emits('stop')
+const edit = i => emits('edit', i)
+</script>
+
+<template>
+  <div class="flex flex-col w-56 overflow-y-auto"><!-- slide list -->
+    <h3 class="font-bold text-lg flex items-center justify-between">
+      Slide List
+      <div class="flex items-center justify-center text-blue-500" v-if="host.state.id">
+        <ChevronLeftIcon @click="play(playing - 1)" class="w-5 mx-1 all-transition hover:scale-125 cursor-pointer" :class="playing < 1 && 'invisible'" />
+        <PauseIcon @click="stop" class="w-6 mx-1 all-transition hover:scale-125 cursor-pointer" :class="playing < 0 && 'invisible'" />
+        <ChevronRightIcon @click="play(playing + 1)" class="w-5 mx-1 all-transition hover:scale-125 cursor-pointer" :class="playing >= slides.length - 1 && 'invisible'" />
+      </div>
+    </h3>
+    <EditableList :list="slides" item-class="border rounded px-2 py-1 bg-white my-1">
+      <template #item="{ element: el, index: i }">
+        <div class="flex items-center cursor-pointer text-gray-700 grow" :class="editing === i && 'font-bold text-black'" @click="edit(i)">
+          <PlayIcon class="w-5 mr-1 all-transition" :class="playing === i ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(i)" />
+          {{ i }}.
+          <div class="grow mx-1">
+            <input class="min-w-full w-0 bg-transparent" v-model="el.name">
+          </div>
+        </div>
+      </template>
+    </EditableList>
+    <div class="border p-2 rounded cursor-pointer my-1 all-transition hover:border-green-500 hover:text-green-500 hover:bg-green-50 flex items-center justify-center" @click="slides.push({ name: 'New Slide' })">
+      <PlusIcon class="w-5 mr-2" />
+      Add Slide
+    </div>
+  </div>
+</template>
+
