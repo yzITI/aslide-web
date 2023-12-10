@@ -5,10 +5,10 @@ import { download } from '../utils/utils.js'
 import { watch } from 'vue'
 import * as host from '../utils/peerHost.js'
 import { setListener, sendIn } from '../utils/iframe.js'
-import Control from '../components/Control.vue'
+import ChannelControl from '../components/ChannelControl.vue'
 import SlideList from '../components/SlideList.vue'
 import SlideHeader from '../components/SlideHeader.vue'
-import { ArrowDownTrayIcon } from '@heroicons/vue/24/solid'
+import { ArrowDownTrayIcon, CloudArrowUpIcon, ListBulletIcon, TvIcon, CogIcon } from '@heroicons/vue/24/solid'
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute(), router = useRouter()
 
@@ -105,25 +105,36 @@ host.handles.responses = v => {
   if (playing === editing) sendIn({ responses: v }, iframe)
 }
 window.host = host
+
+let panel = $ref('list') // list|channel|slide
 </script>
 
 <template>
-  <div class="w-screen h-screen flex bg-gray-100 min-w-[1024px]">
+  <div class="w-full h-screen flex bg-gray-100">
     <div class="flex flex-col grow h-full"><!-- slide control -->
-      <div class="flex p-2 flex items-center justify-between"><!-- title -->
-        <input class="font-bold text-xl block grow px-2 rounded" placeholder="Title" v-model="title">
-        <button class="bg-blue-100 p-2 font-bold all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Export to file" @click="exportFile"><ArrowDownTrayIcon class="w-4" /></button>
-        <button class="bg-blue-500 px-3 py-1 font-bold shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save" v-if="id !== 'local'">Save</button>
+      <div class="flex p-2 w-full items-center justify-between"><!-- title -->
+        <input class="font-bold text-xl block grow px-2 rounded w-0" placeholder="Title" v-model="title">
+        <button class="bg-blue-100 p-2 all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Export to file" @click="exportFile"><ArrowDownTrayIcon class="w-4" /></button>
+        <button class="bg-blue-500 p-1 shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save" v-if="id !== 'local'"><CloudArrowUpIcon class="w-6" /></button>
       </div>
-      <div class="flex grow p-2 h-0"><!-- slides -->
-        <SlideList :playing="playing" :editing="editing" :slides="slides" @play="play" @stop="stop" @edit="edit" />
+      <div class="flex grow p-2 h-0 relative"><!-- slides -->
+        <div class="absolute top-0 h-full w-full p-2 pb-16 md:p-0 md:pb-0 md:static md:w-56 all-transition bg-gray-100 z-20" :style="{ left: panel === 'list' ? 0 : '-100%' }">
+          <SlideList :playing="playing" :editing="editing" :slides="slides" @play="play" @stop="stop" @edit="edit" />
+        </div>
         <div class="flex flex-col grow p-2" v-if="slides[editing]"><!-- slide editor -->
           <SlideHeader :slides="slides" :editing="editing" :playing="playing" @play="play" />
           <iframe v-if="slides[editing].eurl" class="grow" ref="iframe" :src="slides[editing].eurl" :key="editing + slides[editing].eurl" sandbox="allow-same-origin allow-forms allow-popups allow-modals allow-pointer-lock allow-orientation-lock allow-scripts allow-downloads" />
         </div>
       </div>
     </div>
-    <Control :playing="playing" />
+    <div class="fixed top-0 h-full w-full p-2 pb-16 md:p-0 md:pb-0 md:static md:w-64 all-transition bg-gray-700 z-20" :style="{ right: panel === 'channel' ? 0 : '-100%' }">
+      <ChannelControl :playing="playing" />
+    </div>
+  </div>
+  <div class="fixed right-3 bottom-3 flex md:hidden z-30 shadow-md rounded-lg overflow-hidden">
+    <button @click="panel = 'list'" class="p-2 all-transition" :class="panel === 'list' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'"><ListBulletIcon class="w-7" /></button>
+    <button @click="panel = 'slide'" class="border-x p-2 all-transition" :class="panel === 'slide' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'"><TvIcon class="w-7" /></button>
+    <button @click="panel = 'channel'" class="p-2 all-transition" :class="panel === 'channel' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'"><CogIcon class="w-7" /></button>
   </div>
 </template>
 

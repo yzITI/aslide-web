@@ -11,7 +11,7 @@ const edit = i => emits('edit', i)
 </script>
 
 <template>
-  <div class="flex flex-col w-56 overflow-y-auto"><!-- slide list -->
+  <div class="flex flex-col w-full h-full overflow-y-auto"><!-- slide list -->
     <h3 class="font-bold text-lg flex items-center justify-between">
       Slide List
       <div class="flex items-center justify-center text-blue-500" v-if="host.state.id">

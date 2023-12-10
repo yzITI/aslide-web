@@ -14,7 +14,7 @@ let viewUrl = $computed(() => window.location.href.replace(/\/host\/(.*)/, '/vie
 </script>
 
 <template>
-  <div class="flex flex-col w-64 bg-gray-700 text-white"><!-- channel control -->
+  <div class="flex flex-col w-full h-full bg-gray-700 text-white"><!-- channel control -->
     <div class="w-full p-2 flex flex-col"><!-- control panel -->
       <h3 class="font-bold text-lg">Channel Control</h3>
       <input v-model="channel" placeholder="Channel ID" :readonly="host.state.on" @keyup.enter="start" class="px-2 rounded text-black opacity-80 font-mono font-bold my-1">
