@@ -27,7 +27,7 @@ const random = () => Math.random().toString(36).substring(2)
 async function create (data = { title: 'Untitled', slides: [] }) {
   state.loading = 'Loading...'
   const show = random()
-  const res = await srpc.put(state.user?.token, show, data)
+  await srpc.put(state.user?.token, show, data)
   state.loading = false
   shows.push({ show, title: data.title, time: Date.now() })
   shows.sort((a, b) => b.time - a.time)
@@ -42,7 +42,7 @@ async function del (s) {
   })
   if (!isConfirmed) return
   state.loading = 'Loading...'
-  const res = await srpc.del(state.user?.token, s.show)
+  await srpc.del(state.user?.token, s.show)
   state.loading = false
   shows = shows.filter(x => x !== s)
 }
