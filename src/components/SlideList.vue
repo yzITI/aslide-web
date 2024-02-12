@@ -8,6 +8,12 @@ const emits = defineEmits(['edit', 'play', 'stop'])
 const play = i => emits('play', i)
 const stop = () => emits('stop')
 const edit = i => emits('edit', i)
+
+const playIconColor = i => {
+  if (!host.state.id) return 'text-transparent'
+  if (playing === i) return 'text-blue-500'
+  return 'text-gray-200 hover:text-gray-500'
+}
 </script>
 
 <template>
@@ -23,17 +29,17 @@ const edit = i => emits('edit', i)
     <EditableList :list="slides" item-class="border rounded px-2 py-1 bg-white my-1">
       <template #item="{ element: el, index: i }">
         <div class="flex items-center cursor-pointer text-gray-700 grow" :class="editing === i && 'font-bold text-black'" @click="edit(i)">
-          <PlayIcon class="w-5 mr-1 all-transition" :class="playing === i ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(i)" />
-          {{ i }}.
+          <PlayIcon class="w-5 mr-1 all-transition" :class="playIconColor(i)" @click.stop="play(i)" />
+          <div class="select-none">{{ i }}.</div>
           <div class="grow mx-1">
             <input class="min-w-full w-0 bg-transparent" v-model="el.name">
           </div>
         </div>
       </template>
     </EditableList>
-    <div class="border p-2 rounded cursor-pointer my-1 all-transition hover:border-green-500 hover:text-green-500 hover:bg-green-50 flex items-center justify-center" @click="slides.push({ name: 'New Slide' })">
+    <div class="border p-2 rounded cursor-pointer my-1 all-transition border-green-500 text-green-500 bg-green-50 hover:bg-green-100 flex items-center justify-center" @click="slides.push({ name: '(New Slide)' })">
       <PlusIcon class="w-5 mr-2" />
-      Add Slide
+      New Slide
     </div>
   </div>
 </template>

@@ -65,14 +65,21 @@ function upload (f) {
 function dropFile (e) {
   upload(e.dataTransfer.files[0])
 }
+
+function goto (show) {
+  state.loading = 'Loading...'
+  setTimeout(() => {
+    router.push('/host/' + show)
+  }, 200)
+}
 </script>
 
 <template>
   <div class="p-4 sm:p-10 min-h-screen bg-gray-100" @drop.prevent="dropFile" @dragenter.prevent @dragover.prevent>
-    <h1 class="text-xl sm:text-3xl font-bold my-4">Your Shows</h1>
+    <h1 class="text-2xl sm:text-3xl font-bold my-4">Your Shows</h1>
     <p v-if="!shows.length" class="my-2">You don't have slideshows now. Create one?</p>
     <div v-else class="pb-16">
-      <div v-for="s in shows" class="my-2 p-2 shadow all-transition hover:shadow-md rounded bg-white flex items-center justify-between cursor-pointer" @click="router.push('/host/' + s.show)">
+      <div v-for="s in shows" class="my-2 p-2 shadow all-transition hover:shadow-md hover:bg-amber-50 rounded bg-white flex items-center justify-between cursor-pointer" @click="goto(s.show)">
         <div class="flex items-center text-gray-800">
           <TvIcon class="w-8 mx-3" />
           <div>
@@ -85,9 +92,9 @@ function dropFile (e) {
         </div>
       </div>
     </div>
-    <div class="overflow-hidden rounded-full flex items-center fixed right-4 top-4 z-10 shadow-md">
-      <button title="Import from File" class="bg-white text-gray-700 p-2 pl-4 all-transition" @click="fileInput.click"><ArrowUpTrayIcon class="w-8" /></button>
-      <button title="Create New" class="bg-blue-500 text-white p-2 pr-4 shadow all-transition hover:shadow-md" @click="create()"><PlusIcon class="w-8" /></button>
+    <div class="flex items-center fixed right-4 top-4 z-10">
+      <button title="Import from File" class="rounded bg-sky-500 text-white m-2 p-2 all-transition shadow all-transition hover:shadow-md" @click="fileInput.click"><ArrowUpTrayIcon class="w-7" /></button>
+      <button title="Create New" class="rounded bg-blue-500 text-white m-2 p-2 shadow all-transition hover:shadow-md" @click="create()"><PlusIcon class="w-7" /></button>
     </div>
     <input type="file" class="hidden" ref="fileInput" @change="upload(fileInput.files[0])">
   </div>

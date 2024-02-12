@@ -12,7 +12,7 @@ setListener(msg => {
   }
 })
 
-watch($$(markdown), debounce(v => {
+watch($$(markdown), debounce(() => {
   sendOut({ slide: { data: { markdown } } })
 }))
 </script>

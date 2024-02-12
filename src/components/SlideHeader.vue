@@ -1,6 +1,7 @@
 <script setup>
 import Wrapper from './Wrapper.vue'
 import state from '../state.js'
+import * as host from '../utils/peerHost.js'
 import { PlayIcon, ChevronDownIcon, DocumentDuplicateIcon, TrashIcon } from '@heroicons/vue/24/solid'
 const { slides, editing, playing } = defineProps(['slides', 'editing', 'playing'])
 const emits = defineEmits(['play'])
@@ -20,14 +21,21 @@ let plugin = $computed(() => {
   return 'Customize'
 })
 
-function usePlugin (t) {
+function usePlugin (t, n) {
   showPluginSelector = false
   const s = slides[editing]
   if (!s) return
   s.surl = t.surl
   s.eurl = t.eurl
+  if (!s.name.match(/\S/) || s.name.match(/^\(.*\)$/)) s.name = '(' + n + ')'
   if (editing === playing) play(playing) 
 }
+
+let playIconColor = $computed(() => {
+  if (!host.state.id) return 'text-transparent'
+  if (playing === editing) return 'text-blue-500'
+  return 'text-gray-200 hover:text-gray-500'
+})
 </script>
 
 <template>
@@ -41,13 +49,13 @@ function usePlugin (t) {
       <div class="flex items-center">
         <TrashIcon class="w-5 mr-2 all-transition cursor-pointer text-red-200 hover:text-red-500" @click.stop="slides.splice(editing, 1)" />
         <DocumentDuplicateIcon class="w-5 mr-2 all-transition cursor-pointer text-green-200 hover:text-green-500" @click.stop="slides.splice(editing, 0, JSON.parse(JSON.stringify(slides[editing])))" />
-        <PlayIcon class="w-5 mr-2 all-transition cursor-pointer" :class="playing === editing ? 'text-blue-500' : 'text-gray-200 hover:text-gray-500'" @click.stop="play(editing)" />
+        <PlayIcon class="w-5 mr-2 all-transition cursor-pointer" :class="playIconColor" @click.stop="play(editing)" />
       </div>
     </div>
     <Wrapper :show="showPluginSelector"><!-- slide plugin selecor -->
       <div class="grid grid-cols-2 md:grid-cols-5 xl:grid-cols-6 py-2 text-gray-500 font-bold text-sm">
-        <button class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin({})">Customize</button>
-        <button v-for="(t, n) in plugins" class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin(t)">{{ n }}</button>
+        <button class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin({}, 'New Slide')">Customize</button>
+        <button v-for="(t, n) in plugins" class="all-transition bg-gray-100 hover:bg-gray-200 p-1 m-1" @click="usePlugin(t, n)">{{ n }}</button>
       </div>
     </Wrapper>
     <Wrapper :show="plugin === 'Customize'" class="py-1"><!-- customize slide urls -->

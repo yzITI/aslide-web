@@ -113,9 +113,9 @@ let panel = $ref('list') // list|channel|slide
   <div class="w-full h-screen flex bg-gray-100">
     <div class="flex flex-col grow h-full"><!-- slide control -->
       <div class="flex p-2 w-full items-center justify-between"><!-- title -->
-        <input class="font-bold text-xl block grow px-2 rounded w-0" placeholder="Title" v-model="title">
-        <button class="bg-blue-100 p-2 all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Export to file" @click="exportFile"><ArrowDownTrayIcon class="w-4" /></button>
-        <button class="bg-blue-500 p-1 shadow all-transition hover:shadow-md rounded text-white mx-2" title="Save to cloud" @click="save" v-if="id !== 'local'"><CloudArrowUpIcon class="w-6" /></button>
+        <input class="font-bold border text-xl block grow px-2 py-1 rounded w-0" placeholder="Title" v-model="title">
+        <button class="bg-blue-100 p-2 all-transition hover:bg-blue-200 rounded text-blue-500 ml-2" title="Export to file" @click="exportFile"><ArrowDownTrayIcon class="w-5" /></button>
+        <button class="bg-blue-500 p-1 shadow all-transition hover:shadow-md rounded text-white hover:bg-blue-600 mx-2" title="Save to cloud" @click="save" v-if="id !== 'local'"><CloudArrowUpIcon class="w-7" /></button>
       </div>
       <div class="flex grow p-2 h-0 relative"><!-- slides -->
         <div class="absolute top-0 h-full w-full p-2 pb-16 md:p-0 md:pb-0 md:static md:w-56 all-transition bg-gray-100 z-20" :style="{ left: panel === 'list' ? 0 : '-100%' }">
@@ -128,7 +128,7 @@ let panel = $ref('list') // list|channel|slide
       </div>
     </div>
     <div class="fixed top-0 h-full w-full p-2 pb-16 md:p-0 md:pb-0 md:static md:w-64 all-transition bg-gray-700 z-20" :style="{ right: panel === 'channel' ? 0 : '-100%' }">
-      <ChannelControl :playing="playing" />
+      <ChannelControl :playing="playing" @stop="playing = -1" />
     </div>
   </div>
   <div class="fixed right-3 bottom-3 flex md:hidden z-30 shadow-md rounded-lg overflow-hidden">
