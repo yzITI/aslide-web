@@ -106,6 +106,8 @@ host.handles.responses = v => {
 window.host = host
 
 let panel = $ref('list') // list|channel|slide
+
+window.onbeforeunload = () => 'Are you sure you want to leave?'
 </script>
 
 <template>

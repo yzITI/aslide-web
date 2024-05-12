@@ -22,7 +22,18 @@ const routes = []
 for (const r in index) routes.push({ path: r, component: index[r] })
 const router = createRouter({ history: createWebHashHistory(), routes }) 
 
-router.beforeEach(() => { NProgress.start() })
+router.beforeEach(async (to, from) => {
+  if (from.path.indexOf('/host/') === 0) {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Leave the page?', 
+      html: 'Please check if you have saved your work!',
+      icon: 'question',
+      showCancelButton: true
+    })
+    if (!isConfirmed) return false
+  }
+  NProgress.start()
+})
 
 let host = null, view = null
 router.afterEach(async (to, from) => {
