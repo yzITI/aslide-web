@@ -14,7 +14,8 @@ const index = {
   '/plugins/choice': () => import('./plugins/Choice.vue'),
   '/plugins/choice-editor': () => import('./plugins/ChoiceEditor.vue'),
   '/plugins/chat': () => import('./plugins/Chat.vue'),
-  '/plugins/chat-editor': () => import('./plugins/ChatEditor.vue')
+  '/plugins/chat-editor': () => import('./plugins/ChatEditor.vue'),
+  '/plugins/impress-editor': () => import('./plugins/ImpressEditor.vue')
 }
 
 const routes = []

@@ -76,12 +76,11 @@ window.onbeforeunload = () => { host.stop() }
 
 // keyboard play
 document.addEventListener('keyup', e => {
+  if (e.srcElement.value) return
   const code = e.code
   if (code === 'ArrowLeft') play(playing - 1)
   if (code === 'ArrowRight') play(playing + 1)
 }, false)
-
-
 
 let iframe = $ref()
 setListener(msg => { // msg from iframe editor

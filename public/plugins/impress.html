@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <title>ASlide Impress Plugin</title>
+  </head>
+
+  <body>
+    <div id="impress" style="transition: opacity 0.3s ease;" data-width="1024" data-height="768"></div>
+    <script src="https://cdn.jsdelivr.net/gh/impress/impress.js@latest/js/impress.js"></script>
+    <script type="text/javascript">
+    function sendOut (msg) {
+      const win = window.parent
+      if (!win) return
+      win.postMessage(JSON.stringify(msg), '*')
+    }
+
+    function setListener (f) {
+      window.onmessage = e => {
+        try { f(JSON.parse(e.data)) }
+        catch { return }
+      }
+    }
+
+    function executeScriptElements(containerElement) {
+      const scriptElements = containerElement.querySelectorAll('script')
+      for (const scriptElement of scriptElements) {
+        const clonedElement = document.createElement('script')
+        for (const attribute of scriptElement.attributes) {
+          clonedElement.setAttribute(attribute.name, attribute.value)
+        }
+        const async = clonedElement.getAttribute('async')
+        if (async === null) clonedElement.async = false
+        clonedElement.text = scriptElement.text
+        scriptElement.parentNode.replaceChild(clonedElement, scriptElement)
+      }
+    }
+
+    const el = document.getElementById('impress')
+    let init = false
+    const sleep = ms => new Promise(r => setTimeout(r, ms))
+    sendOut({ ready: 1 })
+    setListener(async msg => {
+      if (msg.slide) {
+        if (init) impress().tear()
+        await sleep()
+        el.innerHTML = msg.slide.data?.html || ''
+        executeScriptElements(el)
+        await sleep()
+        impress().init()
+        init = true
+      }
+      if (msg.message) {
+        impress().goto(msg.message.index)
+      }
+    })
+    window.addEventListener('keyup', e => e.stopImmediatePropagation(), true)
+    window.addEventListener('keydown', e => e.stopImmediatePropagation(), true)
+    window.addEventListener('click', e => e.stopImmediatePropagation(), true)
+    </script>
+  </body>
+</html>
+

@@ -47,3 +47,9 @@ watch(() => props.modelValue, v => {
 <template>
   <div ref="el"></div>
 </template>
+
+<style>
+.cm-lineWrapping {
+  word-break: break-all;
+}
+</style>

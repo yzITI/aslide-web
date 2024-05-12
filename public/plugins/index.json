@@ -18,5 +18,9 @@
   "Chat": {
     "surl": "./#/plugins/chat",
     "eurl": "./#/plugins/chat-editor"
+  },
+  "Impress": {
+    "surl": "./plugins/impress.html",
+    "eurl": "./#/plugins/impress-editor"
   }
 }

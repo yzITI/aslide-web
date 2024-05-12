@@ -28,6 +28,7 @@ watch(() => view.state.peer, v => {
 watch(() => view.state.slide, async v => {
   if (!v) return state.loading = 'Waiting for slide...'
   state.loading = false
+  document.title = v.title || 'ASlide'
   if (info.index === v.index) { // same slide
     sendIn({ slide: view.state.slide, session: view.state.id }, iframe)
   } else { // different slide
@@ -48,7 +49,7 @@ watch(() => view.state.message, async () => {
 })
 
 setListener(msg => { // iframe msg
-  if (msg.ready) sendIn({ slide: view.state.slide, session: view.state.id }, iframe)
+  if (msg.ready) sendIn({ slide: view.state.slide, session: view.state.id, message: view.state.message }, iframe)
   if (msg.response) view.response(msg.response)
 })
 
