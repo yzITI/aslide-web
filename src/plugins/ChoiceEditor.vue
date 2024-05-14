@@ -2,6 +2,7 @@
 import { watch, reactive } from 'vue'
 import { sendOut, setListener } from '../utils/iframe.js'
 import { debounce } from '../utils/utils.js'
+import Toggle from '../components/Toggle.vue'
 import CodeMirror from '../components/CodeMirror.vue'
 import EditableList from '../components/EditableList.vue'
 import ProgressBar from '../components/ProgressBar.vue'
@@ -28,33 +29,41 @@ setListener(msg => {
   }
   if (msg.responses) {
     for (const k in msg.responses) responses[k] = msg.responses[k]
+    if (publish) computeResult()
   }
 })
 
-function publish () {
-  for (const o of options) o.ratio = optionCot(o.key) / responseCot
-  sendOut({ slide: { data: { html, options } } })
+let publish = $ref(false)
+const computeResult = () => {
+  for (const o of options) {
+    if (publish) o.ratio = optionCot(o.key) / responseCot
+    else delete o.ratio
+  }
 }
+watch($$(publish), computeResult)
 
-function update () {
+const update = debounce(() => {
   sendOut({ slide: { data: { html, options } } })
-}
+})
 
 function addOption () {
   options.push({
     key: Math.random().toString(36).substring(2),
     text: 'New Option'
   })
+  update()
 }
+
+watch($$(html), update)
+watch($$(options), update, { deep: true })
 </script>
 
 <template>
   <div class="p-2 relative h-full">
     <h2 class="font-bold text-lg my-2 flex items-center justify-between">
       Choice Slide Editor
-      <div class="flex items-center text-white font-bold">
-        <button @click="publish" class="bg-yellow-500 px-2 py-1 rounded text-sm shadow all-transition hover:shadow-md mr-2">Publish Result</button>
-        <button @click="update" class="bg-blue-500 px-2 py-1 rounded text-sm shadow all-transition hover:shadow-md">Update Slide</button>
+      <div class="flex items-center">
+        <Toggle v-model="publish" class="text-sm">Publish Result</Toggle>
       </div>
     </h2>
     <div class="flex items-center my-4 font-bold">

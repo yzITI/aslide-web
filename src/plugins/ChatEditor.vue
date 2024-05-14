@@ -60,10 +60,11 @@ watch($$(thread), refresh)
 <template>
   <div class="p-2 relative h-full">
     <div class="w-full h-full flex flex-col justify-center">
+      <textarea v-model="html" rows="1" placeholder="Chat Prompt" class="p-1 px-2 shrink-0 relative border border-blue-500 rounded bg-blue-100"></textarea>
       <div class="flex items-center justify-between">
         <div class="flex items-center">
           Thread:
-          <select v-model="thread" class="m-2 mr-0 rounded p-1 max-w-[8rem] all-transition" :class="thread && 'ring'">
+          <select v-model="thread" class="m-2 mr-0 rounded p-1 max-w-[8rem] all-transition bg-white border" :class="thread && 'ring'">
             <option value="">All</option>
             <option v-for="(s, id) in sessions" :value="id">{{ s.name || 'Anonymous' }}</option>
           </select>
@@ -71,7 +72,6 @@ watch($$(thread), refresh)
         </div>
         <button class="bg-red-500 text-white font-bold text-sm shadow px-2 py-1 rounded" @click="chat = []">Clear</button>
       </div>
-      <textarea v-model="html" rows="1" placeholder="Chat Prompt" class="rounded p-1 shadow px-2 shrink-0 relative"></textarea>
       <div class="flex flex-col items-end w-full grow overflow-y-auto scrollbar p-4 pb-0">
         <template v-for="msg in displayChat">
           <div class="text-xs text-gray-500 cursor-pointer mt-1 mx-2" :class="msg.self ? '' : 'self-start'" @click="target = msg.target" @dblclick="thread = msg.target">{{ msg.label }}</div>
@@ -80,7 +80,7 @@ watch($$(thread), refresh)
         <div ref="scroll" class="mt-4"></div>
       </div>
       <div class="flex">
-        <select v-model="target" class="m-2 mr-0 rounded p-1 max-w-[6rem] all-transition" :class="target && 'ring'">
+        <select v-model="target" class="m-2 mr-0 rounded p-1 max-w-[6rem] all-transition bg-white border" :class="target && 'ring'">
           <option value="">All</option>
           <option v-for="(s, id) in sessions" :value="id">{{ s.name || 'Anonymous' }}</option>
         </select>

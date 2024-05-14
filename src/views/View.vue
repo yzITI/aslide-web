@@ -12,6 +12,8 @@ let info = $ref({
   name: state.user?.name || route.query.name?.substring(0, 20) || '',
   on: document.visibilityState !== 'hidden'
 })
+state.user = null // logout for security
+window.sessionStorage.removeItem('token')
 
 state.loading = 'Connecting to host...'
 view.start()

@@ -80,6 +80,7 @@ document.addEventListener('keyup', e => {
   const code = e.code
   if (code === 'ArrowLeft') play(playing - 1)
   if (code === 'ArrowRight') play(playing + 1)
+  if (code === 'Space') play(editing)
 }, false)
 
 let iframe = $ref()
