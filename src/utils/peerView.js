@@ -3,6 +3,11 @@ import { reactive } from 'vue'
 
 let peer = null, interval = null, conn = null
 
+const defaultOpt = {
+  host: 's.yzzx.org', path: '/peerjs', secure: true,
+  config: { iceServers: [{ urls: 'stun:stun.internetcalls.com' }, { urls: 'stun:stun.l.google.com:19302' }], sdpSemantics: 'unified-plan' }
+}
+
 export const state = reactive({
   id: false,
   on: false,
@@ -21,7 +26,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 export const getPeer = () => peer
 
-export function start (channel, opt = { host: 's.yzzx.org', path: '/peerjs', secure: true }) {
+export function start (channel, opt = defaultOpt) {
   state.id = ''
   state.on = true
   state.time = 0
