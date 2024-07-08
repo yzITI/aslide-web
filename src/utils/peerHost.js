@@ -1,11 +1,12 @@
 import { Peer } from 'peerjs'
 import { reactive } from 'vue'
+import iceServers from './iceServers.js'
 
 let peer = null, interval = null
 
 const defaultOpt = {
   host: 's.yzzx.org', path: '/peerjs', secure: true,
-  config: { iceServers: [{ urls: 'turn:s.yzzx.org?transport=tcp', username: 'user', credential: '12345678' }], sdpSemantics: 'unified-plan' }
+  config: { iceServers, sdpSemantics: 'unified-plan' }
 }
 
 export const state = reactive({
