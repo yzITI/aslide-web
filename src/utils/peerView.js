@@ -5,7 +5,7 @@ let peer = null, interval = null, conn = null
 
 const defaultOpt = {
   host: 's.yzzx.org', path: '/peerjs', secure: true,
-  config: { iceServers: [{ urls: 'stun:stun.internetcalls.com' }, { urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun.voipbuster.com' }, { urls: 'stun:stun.voipstunt.com' }, { urls: 'stun:stun.voip.aebc.com' }], sdpSemantics: 'unified-plan' }
+  config: { iceServers: [{ urls: 'turn:s.yzzx.org?transport=tcp', username: 'user', credential: '12345678' }], sdpSemantics: 'unified-plan' }
 }
 
 export const state = reactive({
